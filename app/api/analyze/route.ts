@@ -149,24 +149,37 @@ export async function POST(request: Request): Promise<Response> {
   const userMessage = buildUserMessage(formData, calcoloNetto)
 
   const client = new Anthropic()
-  const stream = client.messages.stream({
-    model: 'claude-sonnet-4-5-20250929',
-    max_tokens: 4096,
-    system: SYSTEM_PROMPT,
-    messages: [{ role: 'user', content: userMessage }],
-  })
+
+  let stream: ReturnType<typeof client.messages.stream>
+  try {
+    stream = client.messages.stream({
+      model: 'claude-sonnet-4-5-20250929',
+      max_tokens: 4096,
+      system: SYSTEM_PROMPT,
+      messages: [{ role: 'user', content: userMessage }],
+    })
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Errore nella chiamata AI.'
+    return Response.json({ error: message }, { status: 502 })
+  }
 
   const encoder = new TextEncoder()
   const readable = new ReadableStream({
     start(controller) {
+      let closed = false
       stream.on('text', (text) => {
-        controller.enqueue(encoder.encode(text))
+        if (!closed) controller.enqueue(encoder.encode(text))
       })
       stream.on('end', () => {
-        controller.close()
+        if (!closed) { closed = true; controller.close() }
       })
       stream.on('error', (error) => {
-        controller.error(error)
+        if (!closed) {
+          closed = true
+          const message = error instanceof Error ? error.message : 'Errore streaming AI.'
+          controller.enqueue(encoder.encode(`\n\n[Errore: ${message}]`))
+          controller.close()
+        }
       })
     },
   })
