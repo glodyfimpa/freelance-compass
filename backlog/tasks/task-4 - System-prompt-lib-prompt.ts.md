@@ -1,10 +1,10 @@
 ---
 id: TASK-4
 title: System prompt (lib/prompt.ts)
-status: To Do
+status: Done
 assignee: []
 created_date: '2026-02-27 10:25'
-updated_date: '2026-02-27 10:58'
+updated_date: '2026-02-27 14:15'
 labels:
   - lib
 dependencies:
@@ -40,12 +40,18 @@ Clean up mantenendo i test verdi.
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 System prompt include tabella benchmark per ruolo/seniority
-- [ ] #2 Builder inietta i numeri pre-calcolati nel messaggio utente
-- [ ] #3 Output usa i 3 marcatori di sezione definiti nel PRD
-- [ ] #4 Test scritti PRIMA del codice di produzione
-- [ ] #5 System prompt include tabella benchmark per ruolo/seniority
-- [ ] #6 Builder inietta i numeri pre-calcolati nel messaggio utente
-- [ ] #7 Output usa i 3 marcatori di sezione definiti nel PRD
-- [ ] #8 Tutti i test passano
+- [x] #1 System prompt include tabella benchmark per ruolo/seniority
+- [x] #2 Builder inietta i numeri pre-calcolati nel messaggio utente
+- [x] #3 Output usa i 3 marcatori di sezione definiti nel PRD
+- [x] #4 Test scritti PRIMA del codice di produzione
+- [x] #5 System prompt include tabella benchmark per ruolo/seniority
+- [x] #6 Builder inietta i numeri pre-calcolati nel messaggio utente
+- [x] #7 Output usa i 3 marcatori di sezione definiti nel PRD
+- [x] #8 Tutti i test passano
 <!-- AC:END -->
+
+## Final Summary
+
+<!-- SECTION:FINAL_SUMMARY:BEGIN -->
+Implementato lib/prompt.ts con TDD black-box (27 test). SYSTEM_PROMPT: tabella benchmark 5 ruoli x 3 seniority, 3 marcatori di sezione (## BENCHMARK DI MERCATO, ## ANALISI NETTO REALE, ## PIANO DI TRANSIZIONE), istruzione non ricalcolare, disclaimer commercialista. buildUserMessage: inietta profilo utente e tutti i numeri pre-calcolati (attuale, obiettivo, delta, alternativo frontend). Helper formatCalcoloNetto per evitare duplicazione. Commit: 6b2eb72.
+<!-- SECTION:FINAL_SUMMARY:END -->

@@ -3,9 +3,10 @@ id: TASK-7
 title: >-
   Pagina risultati con streaming (app/results/page.tsx +
   components/ResultBlock.tsx)
-status: To Do
+status: Done
 assignee: []
 created_date: '2026-02-27 10:27'
+updated_date: '2026-02-27 14:56'
 labels:
   - frontend
 dependencies:
@@ -38,8 +39,8 @@ Componente ResultBlock:
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 3 blocchi renderizzati separatamente
-- [ ] #2 Streaming progressivo visibile
-- [ ] #3 Skeleton mostrato per blocchi non ancora ricevuti
-- [ ] #4 Markdown renderizzato correttamente (bold, tabelle, liste)
+- [x] #1 3 blocchi renderizzati separatamente
+- [x] #2 Streaming progressivo visibile
+- [x] #3 Skeleton mostrato per blocchi non ancora ricevuti
+- [x] #4 Markdown renderizzato correttamente (bold, tabelle, liste)
 <!-- AC:END -->

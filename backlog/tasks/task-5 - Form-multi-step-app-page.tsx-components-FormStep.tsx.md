@@ -1,9 +1,10 @@
 ---
 id: TASK-5
 title: Form multi-step (app/page.tsx + components/FormStep.tsx)
-status: To Do
+status: Done
 assignee: []
 created_date: '2026-02-27 10:25'
+updated_date: '2026-02-27 14:56'
 labels:
   - frontend
 dependencies:
@@ -38,8 +39,8 @@ UX:
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 Tutti i 7 step navigabili avanti/indietro
-- [ ] #2 Validazione min/max funzionante per campi numerici
-- [ ] #3 Toggle ATECO mostra/nasconde campo libero
-- [ ] #4 Submit invia FormData completo
+- [x] #1 Tutti i 7 step navigabili avanti/indietro
+- [x] #2 Validazione min/max funzionante per campi numerici
+- [x] #3 Toggle ATECO mostra/nasconde campo libero
+- [x] #4 Submit invia FormData completo
 <!-- AC:END -->

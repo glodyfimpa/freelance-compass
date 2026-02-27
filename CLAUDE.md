@@ -50,8 +50,8 @@ Form (7 steps) → lib/calculator.ts (deterministic) → /api/analyze (API route
 ### Key Files
 
 - `lib/types.ts` - All TypeScript types/interfaces (FormData, CalcoloNetto, CalcoloNettoResult, AnalysisRequest). Domain types use Italian naming.
-- `lib/calculator.ts` - Deterministic net income formula for regime forfettario. ATECO code deduction logic lives here.
-- `lib/prompt.ts` - System prompt builder for Claude. Embeds pre-calculated numbers into the prompt context.
+- `lib/calculator.ts` - Deterministic net income formula for regime forfettario. ATECO code deduction logic lives here. Exports: `calcolaNettoForfettario`, `deduciCoefficienteATECO`, `getAliquota`, `calcolaNettoPerRuolo`.
+- `lib/prompt.ts` - System prompt builder for Claude. Embeds pre-calculated numbers into the prompt context. Exports: `SYSTEM_PROMPT`, `buildUserMessage`.
 - `app/page.tsx` - Multi-step form (7 steps, 8 fields)
 - `app/results/page.tsx` - Streaming results display, splits Claude response on `## BENCHMARK DI MERCATO`, `## ANALISI NETTO REALE`, `## PIANO DI TRANSIZIONE` markers
 - `app/api/analyze/route.ts` - API route: runs calculator, calls Anthropic SDK with streaming
@@ -66,6 +66,7 @@ Form (7 steps) → lib/calculator.ts (deterministic) → /api/analyze (API route
 - INPS gestione separata rate: 26.07% (2025 circular).
 - Revenue cap for forfettario: 85,000 EUR/year.
 - Seniority bands derived from years of experience: 0-2 junior, 3-5 mid, 6+ senior.
+- Financial rounding: `Math.round(value * 100) / 100` at each intermediate step (fatturato, redditoLordo, inps, imponibile, imposta, netto).
 
 ### Path Alias
 
