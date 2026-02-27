@@ -50,3 +50,5 @@ next-env.d.ts
 # Project docs (local only)
 PRD.md
 backlog/
+CLAUDE.md
+.superskills/
