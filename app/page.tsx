@@ -138,8 +138,8 @@ export default function Home() {
       formData.codiceAteco = codiceAteco;
     }
 
-    const encodedData = encodeURIComponent(JSON.stringify(formData));
-    router.push(`/results?data=${encodedData}`);
+    sessionStorage.setItem('freelance-compass-data', JSON.stringify(formData));
+    router.push('/results');
   }
 
   const inputClasses =
@@ -282,7 +282,7 @@ export default function Home() {
                   onChange={(e) =>
                     setRegime(e.target.value as RegimeFiscale)
                   }
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500"
+                  className="h-5 w-5 text-blue-600 focus:ring-blue-500"
                 />
                 <label
                   htmlFor="forfettario5"
@@ -301,7 +301,7 @@ export default function Home() {
                   onChange={(e) =>
                     setRegime(e.target.value as RegimeFiscale)
                   }
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500"
+                  className="h-5 w-5 text-blue-600 focus:ring-blue-500"
                 />
                 <label
                   htmlFor="forfettario15"
@@ -353,7 +353,7 @@ export default function Home() {
                   type="checkbox"
                   checked={atecoConosciuto}
                   onChange={(e) => setAtecoConosciuto(e.target.checked)}
-                  className="h-4 w-4 rounded text-blue-600 focus:ring-blue-500"
+                  className="h-5 w-5 rounded text-blue-600 focus:ring-blue-500"
                 />
                 <label
                   htmlFor="atecoConosciuto"
@@ -397,7 +397,7 @@ export default function Home() {
                     onChange={(e) =>
                       setObiettivo(e.target.value as Obiettivo)
                     }
-                    className="h-4 w-4 text-blue-600 focus:ring-blue-500"
+                    className="h-5 w-5 text-blue-600 focus:ring-blue-500"
                   />
                   <label
                     htmlFor={opt.value}

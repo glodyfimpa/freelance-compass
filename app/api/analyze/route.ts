@@ -1,24 +1,26 @@
 import Anthropic from '@anthropic-ai/sdk'
 import { calcolaNettoPerRuolo } from '@/lib/calculator'
 import { SYSTEM_PROMPT, buildUserMessage } from '@/lib/prompt'
+import { BENCHMARK, getSeniority } from '@/lib/benchmarks'
 import type { FormData, Ruolo, RegimeFiscale, Obiettivo, CalcoloNettoResult } from '@/lib/types'
 
+// --- Rate limiting (in-memory, per-instance) ---
+
+const rateLimitMap = new Map<string, { count: number; resetAt: number }>()
+const RATE_LIMIT = { maxRequests: 10, windowMs: 3600_000 }
+
+function isRateLimited(ip: string): boolean {
+  const now = Date.now()
+  const entry = rateLimitMap.get(ip)
+  if (!entry || now > entry.resetAt) {
+    rateLimitMap.set(ip, { count: 1, resetAt: now + RATE_LIMIT.windowMs })
+    return false
+  }
+  entry.count++
+  return entry.count > RATE_LIMIT.maxRequests
+}
+
 // --- Benchmark lookup ---
-
-const BENCHMARK: Record<string, Record<string, [number, number]>> = {
-  backend:   { junior: [200, 280], mid: [300, 380], senior: [400, 550] },
-  frontend:  { junior: [180, 250], mid: [260, 330], senior: [350, 480] },
-  fullstack: { junior: [200, 270], mid: [270, 350], senior: [380, 520] },
-  devops:    { junior: [250, 320], mid: [350, 430], senior: [450, 600] },
-  data:      { junior: [230, 300], mid: [330, 420], senior: [440, 600] },
-  altro:     { junior: [200, 280], mid: [300, 380], senior: [400, 550] },
-}
-
-function getSeniority(anni: number): string {
-  if (anni <= 2) return 'junior'
-  if (anni <= 5) return 'mid'
-  return 'senior'
-}
 
 function getTariffaObiettivo(ruolo: string, anni: number, tariffaAttuale: number): number {
   const seniority = getSeniority(anni)
@@ -64,11 +66,20 @@ function validateFormData(data: unknown): { valid: true; formData: FormData } | 
     return { valid: false, error: 'Campo "obiettivo" mancante o non valido.' }
   }
 
+  if (d.atecoConosciuto && d.codiceAteco) {
+    const atecoPattern = /^\d{2}\.\d{2}(\.\d{2})?$/
+    if (typeof d.codiceAteco !== 'string' || !atecoPattern.test(d.codiceAteco)) {
+      return { valid: false, error: 'Codice ATECO non valido. Formato atteso: XX.XX o XX.XX.XX' }
+    }
+  }
+
+  const sanitizedStack = typeof d.stack === 'string' ? d.stack.slice(0, 50) : undefined
+
   return {
     valid: true,
     formData: {
       ruolo: d.ruolo as Ruolo,
-      stack: d.stack as FormData['stack'],
+      stack: sanitizedStack as FormData['stack'],
       anniEsperienza: d.anniEsperienza as number,
       tariffaGiornaliera: d.tariffaGiornaliera as number,
       regime: d.regime as RegimeFiscale,
@@ -120,9 +131,17 @@ function buildCalcoloNettoResult(formData: FormData): CalcoloNettoResult {
 // --- Route handler ---
 
 export async function POST(request: Request): Promise<Response> {
+  const clientIp = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown'
+  if (isRateLimited(clientIp)) {
+    return Response.json(
+      { error: 'Troppe richieste. Riprova tra qualche minuto.' },
+      { status: 429 },
+    )
+  }
+
   if (!process.env.ANTHROPIC_API_KEY) {
     return Response.json(
-      { error: 'ANTHROPIC_API_KEY non configurata. Contattare il supporto.' },
+      { error: 'Servizio temporaneamente non disponibile.' },
       { status: 500 },
     )
   }
@@ -158,26 +177,24 @@ export async function POST(request: Request): Promise<Response> {
       system: SYSTEM_PROMPT,
       messages: [{ role: 'user', content: userMessage }],
     })
-  } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : 'Errore nella chiamata AI.'
-    return Response.json({ error: message }, { status: 502 })
+  } catch {
+    return Response.json({ error: 'Errore temporaneo del servizio di analisi. Riprova tra poco.' }, { status: 502 })
   }
 
   const encoder = new TextEncoder()
   const readable = new ReadableStream({
     start(controller) {
       let closed = false
-      stream.on('text', (text) => {
+      stream.on('text', (text: string) => {
         if (!closed) controller.enqueue(encoder.encode(text))
       })
       stream.on('end', () => {
         if (!closed) { closed = true; controller.close() }
       })
-      stream.on('error', (error) => {
+      stream.on('error', (_error: Error) => {
         if (!closed) {
           closed = true
-          const message = error instanceof Error ? error.message : 'Errore streaming AI.'
-          controller.enqueue(encoder.encode(`\n\n[Errore: ${message}]`))
+          controller.enqueue(encoder.encode('\n\n[Errore: servizio temporaneamente non disponibile.]'))
           controller.close()
         }
       })

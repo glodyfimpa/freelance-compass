@@ -1,6 +1,7 @@
 'use client'
 
 import ReactMarkdown from 'react-markdown'
+import rehypeSanitize from 'rehype-sanitize'
 import type { BlockState } from '@/lib/stream-parser'
 
 interface ResultBlockProps {
@@ -38,7 +39,7 @@ function StreamingIndicator() {
 
 export default function ResultBlock({ titolo, contenuto, stato }: ResultBlockProps) {
   return (
-    <section className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-900">
+    <section className="min-h-[200px] rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-900">
       <h2 className="mb-4 flex items-center text-xl font-semibold tracking-tight">
         {titolo}
         {stato === 'streaming' && <StreamingIndicator />}
@@ -48,7 +49,7 @@ export default function ResultBlock({ titolo, contenuto, stato }: ResultBlockPro
         <SkeletonBlock />
       ) : (
         <div className="prose prose-sm max-w-none dark:prose-invert">
-          <ReactMarkdown>{contenuto}</ReactMarkdown>
+          <ReactMarkdown rehypePlugins={[rehypeSanitize]}>{contenuto}</ReactMarkdown>
         </div>
       )}
     </section>

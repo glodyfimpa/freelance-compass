@@ -162,7 +162,7 @@ describe("Multi-step form", () => {
     expect(screen.getByText("Il valore deve essere tra 1 e 23")).toBeInTheDocument();
   });
 
-  it("submits complete FormData to /results", () => {
+  it("submits complete FormData to /results via sessionStorage", () => {
     render(<Home />);
     fireEvent.change(screen.getByLabelText("Ruolo"), { target: { value: "backend" } });
     fireEvent.change(screen.getByLabelText("Stack tecnologico (opzionale)"), { target: { value: "java-spring" } });
@@ -178,11 +178,10 @@ describe("Multi-step form", () => {
     fireEvent.click(screen.getByText("Avanti"));
     fireEvent.click(screen.getByLabelText("Ottimizzare il netto"));
     fireEvent.click(screen.getByText("Analizza"));
-    expect(mockPush).toHaveBeenCalledTimes(1);
-    const pushArg = mockPush.mock.calls[0][0] as string;
-    expect(pushArg).toContain("/results");
-    const url = new URL(pushArg, "http://localhost");
-    const data = JSON.parse(decodeURIComponent(url.searchParams.get("data")!));
+    expect(mockPush).toHaveBeenCalledWith("/results");
+    const stored = sessionStorage.getItem("freelance-compass-data");
+    expect(stored).toBeTruthy();
+    const data = JSON.parse(stored!);
     expect(data).toEqual({
       ruolo: "backend",
       stack: "java-spring",
@@ -212,9 +211,8 @@ describe("Multi-step form", () => {
     fireEvent.click(screen.getByText("Avanti"));
     fireEvent.click(screen.getByLabelText("Aumentare la tariffa"));
     fireEvent.click(screen.getByText("Analizza"));
-    const pushArg = mockPush.mock.calls[0][0] as string;
-    const url = new URL(pushArg, "http://localhost");
-    const data = JSON.parse(decodeURIComponent(url.searchParams.get("data")!));
+    const stored = sessionStorage.getItem("freelance-compass-data");
+    const data = JSON.parse(stored!);
     expect(data.atecoConosciuto).toBe(true);
     expect(data.codiceAteco).toBe("62.01.00");
   });

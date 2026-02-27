@@ -107,7 +107,7 @@ describe('POST /api/analyze', () => {
     const { POST } = await import('@/app/api/analyze/route')
     const res = await POST(makeReq(validFormData))
     expect(res.status).toBe(500)
-    expect((await res.json()).error).toContain('API_KEY')
+    expect((await res.json()).error).toContain('non disponibile')
   })
 
   it('runs calcolaNettoPerRuolo before AI call', async () => {

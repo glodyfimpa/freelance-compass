@@ -1,7 +1,6 @@
 'use client'
 
-import { useSearchParams } from 'next/navigation'
-import { useEffect, useState, useCallback, Suspense } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import Link from 'next/link'
 import type { FormData } from '@/lib/types'
 import { parseStreamingBlocks } from '@/lib/stream-parser'
@@ -9,7 +8,6 @@ import type { ParsedBlocks } from '@/lib/stream-parser'
 import ResultBlock from '@/components/ResultBlock'
 
 function ResultsContent() {
-  const searchParams = useSearchParams()
   const [blocks, setBlocks] = useState<ParsedBlocks>(() =>
     parseStreamingBlocks('', false),
   )
@@ -63,20 +61,20 @@ function ResultsContent() {
   }, [])
 
   useEffect(() => {
-    const dataParam = searchParams.get('data')
+    const raw = sessionStorage.getItem('freelance-compass-data')
 
-    if (!dataParam) {
+    if (!raw) {
       setErrore('Dati del form mancanti. Torna alla pagina principale per compilare il form.')
       return
     }
 
     try {
-      const formData: FormData = JSON.parse(decodeURIComponent(dataParam))
+      const formData: FormData = JSON.parse(raw)
       fetchAnalisi(formData)
     } catch {
       setErrore('Dati del form non validi. Torna alla pagina principale per compilare il form.')
     }
-  }, [searchParams, fetchAnalisi])
+  }, [fetchAnalisi])
 
   if (errore) {
     return (
@@ -85,7 +83,7 @@ function ResultsContent() {
           <p className="text-red-700 dark:text-red-300">{errore}</p>
           <Link
             href="/"
-            className="mt-4 inline-block rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 dark:bg-gray-100 dark:text-gray-900 dark:hover:bg-gray-200"
+            className="mt-4 inline-block rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
           >
             Nuova analisi
           </Link>
@@ -128,7 +126,7 @@ function ResultsContent() {
       <div className="mt-8 text-center">
         <Link
           href="/"
-          className="inline-block rounded-md bg-gray-900 px-6 py-2.5 text-sm font-medium text-white hover:bg-gray-800 dark:bg-gray-100 dark:text-gray-900 dark:hover:bg-gray-200"
+          className="inline-block rounded-md bg-blue-600 px-6 py-2.5 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
         >
           Nuova analisi
         </Link>
@@ -138,15 +136,5 @@ function ResultsContent() {
 }
 
 export default function ResultsPage() {
-  return (
-    <Suspense
-      fallback={
-        <div className="flex min-h-screen items-center justify-center">
-          <p className="text-gray-500">Caricamento...</p>
-        </div>
-      }
-    >
-      <ResultsContent />
-    </Suspense>
-  )
+  return <ResultsContent />
 }
