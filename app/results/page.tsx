@@ -192,11 +192,9 @@ function ResultsContent() {
           <h1 className="text-3xl font-semibold tracking-tight text-gray-900">
             La tua analisi
           </h1>
-          <p className="mt-2 text-sm text-gray-400">
-            {streamComplete
-              ? 'Analisi completata.'
-              : 'Analisi in corso...'}
-          </p>
+          {streamComplete && (
+            <p className="mt-2 text-sm text-gray-400">Analisi completata.</p>
+          )}
         </header>
 
         {formData && <ProfileBadges formData={formData} />}
@@ -210,32 +208,50 @@ function ResultsContent() {
         )}
       </div>
 
-      <div>
-        {[
-          { block: blocks.benchmark, variant: 'default' as const },
-          { block: blocks.analisi, variant: 'default' as const },
-          { block: blocks.piano, variant: 'highlighted' as const },
-        ].map(({ block, variant }, i) => (
-          <div
-            key={i}
-            className="sticky transition-[margin] duration-500 ease-out"
-            style={{
-              top: `${headerHeight + 10 + i * 25}px`,
-              zIndex: activeCard === i ? 50 : 10 + i,
-              marginBottom: activeCard !== null && i < activeCard ? '-2rem' : '1.5rem',
-              marginTop: activeCard !== null && i > activeCard ? '70vh' : '0',
-            }}
-          >
-            <ResultBlock
-              titolo={block.titolo}
-              contenuto={block.contenuto}
-              stato={block.stato}
-              variant={variant}
-              onClick={() => handleCardClick(i)}
+      {blocks.benchmark.stato === 'loading' ? (
+        <div className="flex flex-col items-center justify-center py-16">
+          <div className="flex items-center gap-2">
+            <span className="h-2 w-2 animate-pulse rounded-full bg-blue-500" />
+            <span
+              className="h-2 w-2 animate-pulse rounded-full bg-blue-500"
+              style={{ animationDelay: '0.3s' }}
+            />
+            <span
+              className="h-2 w-2 animate-pulse rounded-full bg-blue-500"
+              style={{ animationDelay: '0.6s' }}
             />
           </div>
-        ))}
-      </div>
+          <p className="mt-4 text-sm text-gray-400">Analisi del tuo profilo in corso...</p>
+        </div>
+      ) : (
+        <div>
+          {[
+            { block: blocks.benchmark, variant: 'default' as const },
+            { block: blocks.analisi, variant: 'default' as const },
+            { block: blocks.piano, variant: 'highlighted' as const },
+          ].map(({ block, variant }, i) => (
+            <div
+              key={i}
+              className="sticky transition-[margin] duration-500 ease-out animate-[fadeSlideIn_0.5s_ease-out_both]"
+              style={{
+                top: `${headerHeight + 10 + i * 25}px`,
+                zIndex: activeCard === i ? 50 : 10 + i,
+                marginBottom: activeCard !== null && i < activeCard ? '-2rem' : '1.5rem',
+                marginTop: activeCard !== null && i > activeCard ? '70vh' : '0',
+                animationDelay: `${i * 150}ms`,
+              }}
+            >
+              <ResultBlock
+                titolo={block.titolo}
+                contenuto={block.contenuto}
+                stato={block.stato}
+                variant={variant}
+                onClick={() => handleCardClick(i)}
+              />
+            </div>
+          ))}
+        </div>
+      )}
 
       <div className="mt-8 text-center">
         <Link
