@@ -89,15 +89,10 @@ function ResultsContent() {
     return { risultato, tariffaObiettivo: tariffaObj }
   }, [formData])
 
-  const [openCards, setOpenCards] = useState<Set<number>>(new Set())
+  const [activeCard, setActiveCard] = useState<number | null>(null)
 
   const handleCardClick = useCallback((index: number) => {
-    setOpenCards(prev => {
-      const next = new Set(prev)
-      if (next.has(index)) next.delete(index)
-      else next.add(index)
-      return next
-    })
+    setActiveCard(prev => prev === index ? null : index)
   }, [])
 
   const fetchAnalisi = useCallback(async (fd: FormData) => {
@@ -210,10 +205,12 @@ function ResultsContent() {
         ].map(({ block, variant }, i) => (
           <div
             key={i}
-            className="sticky mb-6"
+            className="sticky transition-[margin] duration-500 ease-out"
             style={{
-              top: `${20 + i * 60}px`,
-              zIndex: 10 + i,
+              top: `${20 + i * 25}px`,
+              zIndex: activeCard === i ? 50 : 10 + i,
+              marginBottom: activeCard !== null && i < activeCard ? '-2rem' : '1.5rem',
+              marginTop: activeCard !== null && i > activeCard ? '70vh' : '0',
             }}
           >
             <ResultBlock
@@ -222,7 +219,6 @@ function ResultsContent() {
               stato={block.stato}
               variant={variant}
               onClick={() => handleCardClick(i)}
-              collapsed={!openCards.has(i)}
             />
           </div>
         ))}
