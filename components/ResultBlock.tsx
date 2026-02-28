@@ -9,6 +9,8 @@ interface ResultBlockProps {
   contenuto: string
   stato: BlockState
   variant?: 'default' | 'highlighted'
+  onClick?: () => void
+  collapsed?: boolean
 }
 
 function SkeletonBlock() {
@@ -38,27 +40,53 @@ function StreamingIndicator() {
   )
 }
 
-export default function ResultBlock({ titolo, contenuto, stato, variant = 'default' }: ResultBlockProps) {
+export default function ResultBlock({ titolo, contenuto, stato, variant = 'default', onClick, collapsed = false }: ResultBlockProps) {
   const isHighlighted = variant === 'highlighted'
 
-  const sectionClasses = isHighlighted
-    ? 'min-h-[200px] rounded-xl border-l-4 border-l-blue-600 border border-blue-100 bg-blue-50/50 p-6 shadow-md'
-    : 'min-h-[200px] rounded-xl border border-gray-200 bg-white p-6 shadow-sm'
+  const baseClasses = 'rounded-xl p-6 shadow-lg'
+  const variantClasses = isHighlighted
+    ? 'border-l-4 border-l-blue-600 border border-blue-100 bg-white'
+    : 'border border-gray-200 bg-white'
+  const interactiveClasses = onClick
+    ? 'cursor-pointer transition-shadow duration-200 hover:shadow-xl'
+    : ''
 
   return (
-    <section className={sectionClasses}>
-      <h2 className="mb-4 flex items-center text-xl font-semibold tracking-tight">
-        {titolo}
-        {stato === 'streaming' && <StreamingIndicator />}
+    <section className={`${baseClasses} ${variantClasses} ${interactiveClasses}`} onClick={onClick}>
+      <h2 className="flex items-center justify-between text-xl font-semibold tracking-tight">
+        <span className="flex items-center">
+          {titolo}
+          {stato === 'streaming' && !collapsed && <StreamingIndicator />}
+        </span>
+        {onClick && (
+          <svg
+            className={`h-5 w-5 shrink-0 text-gray-400 transition-transform duration-300 ${!collapsed ? 'rotate-180' : ''}`}
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          </svg>
+        )}
       </h2>
 
-      {stato === 'loading' ? (
-        <SkeletonBlock />
-      ) : (
-        <div className="prose prose-sm max-w-none">
-          <ReactMarkdown rehypePlugins={[rehypeSanitize]}>{contenuto}</ReactMarkdown>
+      <div
+        className={`grid transition-[grid-template-rows] duration-300 ease-out ${
+          collapsed ? 'grid-rows-[0fr]' : 'grid-rows-[1fr]'
+        }`}
+      >
+        <div className="overflow-hidden">
+          <div className="pt-4">
+            {stato === 'loading' ? (
+              <SkeletonBlock />
+            ) : (
+              <div className="prose prose-sm max-w-none">
+                <ReactMarkdown rehypePlugins={[rehypeSanitize]}>{contenuto}</ReactMarkdown>
+              </div>
+            )}
+          </div>
         </div>
-      )}
+      </div>
     </section>
   )
 }

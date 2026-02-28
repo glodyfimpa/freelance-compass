@@ -89,6 +89,17 @@ function ResultsContent() {
     return { risultato, tariffaObiettivo: tariffaObj }
   }, [formData])
 
+  const [openCards, setOpenCards] = useState<Set<number>>(new Set())
+
+  const handleCardClick = useCallback((index: number) => {
+    setOpenCards(prev => {
+      const next = new Set(prev)
+      if (next.has(index)) next.delete(index)
+      else next.add(index)
+      return next
+    })
+  }, [])
+
   const fetchAnalisi = useCallback(async (fd: FormData) => {
     try {
       const response = await fetch('/api/analyze', {
@@ -191,23 +202,30 @@ function ResultsContent() {
         />
       )}
 
-      <div className="space-y-6">
-        <ResultBlock
-          titolo={blocks.benchmark.titolo}
-          contenuto={blocks.benchmark.contenuto}
-          stato={blocks.benchmark.stato}
-        />
-        <ResultBlock
-          titolo={blocks.analisi.titolo}
-          contenuto={blocks.analisi.contenuto}
-          stato={blocks.analisi.stato}
-        />
-        <ResultBlock
-          titolo={blocks.piano.titolo}
-          contenuto={blocks.piano.contenuto}
-          stato={blocks.piano.stato}
-          variant="highlighted"
-        />
+      <div>
+        {[
+          { block: blocks.benchmark, variant: 'default' as const },
+          { block: blocks.analisi, variant: 'default' as const },
+          { block: blocks.piano, variant: 'highlighted' as const },
+        ].map(({ block, variant }, i) => (
+          <div
+            key={i}
+            className="sticky mb-6"
+            style={{
+              top: `${20 + i * 60}px`,
+              zIndex: 10 + i,
+            }}
+          >
+            <ResultBlock
+              titolo={block.titolo}
+              contenuto={block.contenuto}
+              stato={block.stato}
+              variant={variant}
+              onClick={() => handleCardClick(i)}
+              collapsed={!openCards.has(i)}
+            />
+          </div>
+        ))}
       </div>
 
       <div className="mt-8 text-center">
