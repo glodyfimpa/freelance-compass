@@ -10,6 +10,7 @@ interface ResultBlockProps {
   stato: BlockState
   variant?: 'default' | 'highlighted'
   onClick?: () => void
+  maxHeight?: string
 }
 
 function SkeletonBlock() {
@@ -39,7 +40,7 @@ function StreamingIndicator() {
   )
 }
 
-export default function ResultBlock({ titolo, contenuto, stato, variant = 'default', onClick }: ResultBlockProps) {
+export default function ResultBlock({ titolo, contenuto, stato, variant = 'default', onClick, maxHeight }: ResultBlockProps) {
   const isHighlighted = variant === 'highlighted'
 
   const baseClasses = 'min-h-[200px] rounded-xl p-6 shadow-lg'
@@ -51,7 +52,11 @@ export default function ResultBlock({ titolo, contenuto, stato, variant = 'defau
     : ''
 
   return (
-    <section className={`${baseClasses} ${variantClasses} ${interactiveClasses}`} onClick={onClick}>
+    <section
+      className={`${baseClasses} ${variantClasses} ${interactiveClasses}`}
+      onClick={onClick}
+      style={maxHeight ? { maxHeight, overflowY: 'auto' } : undefined}
+    >
       <h2 className="mb-4 flex items-center text-xl font-semibold tracking-tight">
         {titolo}
         {stato === 'streaming' && <StreamingIndicator />}

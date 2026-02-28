@@ -106,6 +106,34 @@ function ResultsContent() {
     setActiveCard(prev => prev === index ? null : index)
   }, [])
 
+  const cardRefs = useRef<(HTMLDivElement | null)[]>([])
+  const [stuckCards, setStuckCards] = useState<Set<number>>(new Set())
+
+  useEffect(() => {
+    if (!headerHeight) return
+    const stickyTops = [0, 1, 2].map(i => headerHeight + 10 + i * 25)
+    let rafId: number
+
+    const onScroll = () => {
+      cancelAnimationFrame(rafId)
+      rafId = requestAnimationFrame(() => {
+        const next = new Set<number>()
+        cardRefs.current.forEach((el, i) => {
+          if (!el) return
+          if (el.getBoundingClientRect().top <= stickyTops[i] + 1) next.add(i)
+        })
+        setStuckCards(prev => {
+          if (prev.size === next.size && [...prev].every(v => next.has(v))) return prev
+          return next
+        })
+      })
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true })
+    onScroll()
+    return () => { window.removeEventListener('scroll', onScroll); cancelAnimationFrame(rafId) }
+  }, [headerHeight])
+
   const fetchAnalisi = useCallback(async (fd: FormData) => {
     try {
       const response = await fetch('/api/analyze', {
@@ -232,6 +260,7 @@ function ResultsContent() {
           ].map(({ block, variant }, i) => (
             <div
               key={i}
+              ref={el => { cardRefs.current[i] = el }}
               className="sticky transition-[margin] duration-500 ease-out animate-[fadeSlideIn_0.5s_ease-out_both]"
               style={{
                 top: `${headerHeight + 10 + i * 25}px`,
@@ -247,6 +276,7 @@ function ResultsContent() {
                 stato={block.stato}
                 variant={variant}
                 onClick={() => handleCardClick(i)}
+                maxHeight={stuckCards.has(i) ? `calc(100vh - ${headerHeight + 10 + i * 25 + 24}px)` : undefined}
               />
             </div>
           ))}
