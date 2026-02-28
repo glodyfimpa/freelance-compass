@@ -21,7 +21,7 @@ describe("Multi-step form", () => {
     render(<Home />);
     expect(screen.getByText("Freelance Compass")).toBeInTheDocument();
     expect(screen.getByText("Ruolo e Stack")).toBeInTheDocument();
-    expect(screen.getByText("Step 1 di 7")).toBeInTheDocument();
+    expect(screen.getByText("1/7 Ruolo e Stack")).toBeInTheDocument();
   });
 
   it("step 1 has a Ruolo dropdown with all role options", () => {
@@ -46,14 +46,14 @@ describe("Multi-step form", () => {
     render(<Home />);
     fireEvent.change(screen.getByLabelText("Ruolo"), { target: { value: "backend" } });
     fireEvent.click(screen.getByText("Avanti"));
-    expect(screen.getByText("Step 2 di 7")).toBeInTheDocument();
+    expect(screen.getByText("2/7 Esperienza")).toBeInTheDocument();
     expect(screen.getByText("Esperienza")).toBeInTheDocument();
   });
 
   it("blocks forward without Ruolo", () => {
     render(<Home />);
     fireEvent.click(screen.getByText("Avanti"));
-    expect(screen.getByText("Step 1 di 7")).toBeInTheDocument();
+    expect(screen.getByText("1/7 Ruolo e Stack")).toBeInTheDocument();
   });
 
   it("navigates backward", () => {
@@ -61,7 +61,7 @@ describe("Multi-step form", () => {
     fireEvent.change(screen.getByLabelText("Ruolo"), { target: { value: "backend" } });
     fireEvent.click(screen.getByText("Avanti"));
     fireEvent.click(screen.getByText("Indietro"));
-    expect(screen.getByText("Step 1 di 7")).toBeInTheDocument();
+    expect(screen.getByText("1/7 Ruolo e Stack")).toBeInTheDocument();
   });
 
   it("hides Indietro on step 1", () => {

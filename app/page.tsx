@@ -13,6 +13,16 @@ import type {
 
 const TOTAL_STEPS = 7;
 
+const STEP_LABELS: Record<number, string> = {
+  1: 'Ruolo e Stack',
+  2: 'Esperienza',
+  3: 'Tariffa',
+  4: 'Regime Fiscale',
+  5: 'Giorni Fatturati',
+  6: 'Codice ATECO',
+  7: 'Obiettivo',
+};
+
 const RUOLO_OPTIONS: { value: Ruolo; label: string }[] = [
   { value: "backend", label: "Backend Developer" },
   { value: "frontend", label: "Frontend Developer" },
@@ -143,28 +153,31 @@ export default function Home() {
   }
 
   const inputClasses =
-    "w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-base text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100";
+    "w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-base text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20";
   const selectClasses = inputClasses + " appearance-none";
-  const labelClasses = "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5";
-  const errorClasses = "mt-1.5 text-sm text-red-600 dark:text-red-400";
+  const labelClasses = "block text-sm font-medium text-gray-700 mb-1.5";
+  const errorClasses = "mt-1.5 text-sm text-red-600";
 
   return (
     <div className="flex min-h-screen items-center justify-center px-4 py-8">
-      <div className="w-full max-w-lg">
-        <h1 className="mb-2 text-center text-3xl font-semibold tracking-tight text-foreground">
+      <div className="w-full max-w-lg rounded-2xl bg-white p-8 shadow-md">
+        <h1 className="mb-1 text-center text-3xl font-semibold tracking-tight text-gray-900">
           Freelance Compass
         </h1>
-        <p className="mb-8 text-center text-sm text-gray-500 dark:text-gray-400">
-          Step {currentStep} di {TOTAL_STEPS}
+        <p className="mb-6 text-center text-sm text-gray-400">
+          Scopri se la tua tariffa e in linea con il mercato
         </p>
 
         {/* Progress bar */}
-        <div className="mb-8 h-1.5 w-full rounded-full bg-gray-200 dark:bg-gray-700">
+        <div className="mb-2 h-1.5 w-full rounded-full bg-gray-100">
           <div
             className="h-1.5 rounded-full bg-blue-600 transition-all duration-300"
             style={{ width: `${(currentStep / TOTAL_STEPS) * 100}%` }}
           />
         </div>
+        <p className="mb-8 text-right text-xs text-gray-400">
+          {currentStep}/{TOTAL_STEPS} {STEP_LABELS[currentStep]}
+        </p>
 
         {/* Step 1: Ruolo e Stack */}
         {currentStep === 1 && (
@@ -286,7 +299,7 @@ export default function Home() {
                 />
                 <label
                   htmlFor="forfettario5"
-                  className="text-base text-gray-900 dark:text-gray-100"
+                  className="text-base text-gray-900"
                 >
                   Forfettario 5% (primi 5 anni)
                 </label>
@@ -305,7 +318,7 @@ export default function Home() {
                 />
                 <label
                   htmlFor="forfettario15"
-                  className="text-base text-gray-900 dark:text-gray-100"
+                  className="text-base text-gray-900"
                 >
                   Forfettario 15% (dal 6{"\u00B0"} anno)
                 </label>
@@ -357,7 +370,7 @@ export default function Home() {
                 />
                 <label
                   htmlFor="atecoConosciuto"
-                  className="text-base text-gray-900 dark:text-gray-100"
+                  className="text-base text-gray-900"
                 >
                   Conosco il mio codice ATECO
                 </label>
@@ -401,7 +414,7 @@ export default function Home() {
                   />
                   <label
                     htmlFor={opt.value}
-                    className="text-base text-gray-900 dark:text-gray-100"
+                    className="text-base text-gray-900"
                   >
                     {opt.label}
                   </label>
@@ -420,7 +433,7 @@ export default function Home() {
             <button
               type="button"
               onClick={handleBack}
-              className="rounded-lg border border-gray-300 px-6 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500/20 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800"
+              className="rounded-lg border border-gray-300 px-6 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500/20 hover:bg-gray-50"
             >
               Indietro
             </button>

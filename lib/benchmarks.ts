@@ -15,6 +15,13 @@ export function getSeniority(anni: number): SeniorityBand {
   return 'senior'
 }
 
+export function getTariffaObiettivo(ruolo: string, anni: number, tariffaAttuale: number): number {
+  const seniority = getSeniority(anni)
+  const [min, max] = BENCHMARK[ruolo]?.[seniority] ?? [200, 400]
+  const midpoint = Math.round((min + max) / 2)
+  return Math.max(midpoint, Math.round(tariffaAttuale * 1.1))
+}
+
 export function buildBenchmarkMarkdownTable(): string {
   return `| Ruolo | Junior (0-2y) | Mid (3-5y) | Senior (6+y) |
 |---|---|---|---|

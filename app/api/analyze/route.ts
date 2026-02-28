@@ -1,7 +1,7 @@
 import Anthropic from '@anthropic-ai/sdk'
 import { calcolaNettoPerRuolo } from '@/lib/calculator'
 import { SYSTEM_PROMPT, buildUserMessage } from '@/lib/prompt'
-import { BENCHMARK, getSeniority } from '@/lib/benchmarks'
+import { getTariffaObiettivo } from '@/lib/benchmarks'
 import type { FormData, Ruolo, RegimeFiscale, Obiettivo, CalcoloNettoResult } from '@/lib/types'
 
 // --- Rate limiting (in-memory, per-instance) ---
@@ -18,15 +18,6 @@ function isRateLimited(ip: string): boolean {
   }
   entry.count++
   return entry.count > RATE_LIMIT.maxRequests
-}
-
-// --- Benchmark lookup ---
-
-function getTariffaObiettivo(ruolo: string, anni: number, tariffaAttuale: number): number {
-  const seniority = getSeniority(anni)
-  const [min, max] = BENCHMARK[ruolo]?.[seniority] ?? [200, 400]
-  const midpoint = Math.round((min + max) / 2)
-  return Math.max(midpoint, Math.round(tariffaAttuale * 1.1))
 }
 
 // --- Validation ---
