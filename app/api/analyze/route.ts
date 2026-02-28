@@ -177,16 +177,24 @@ export async function POST(request: Request): Promise<Response> {
     start(controller) {
       let closed = false
       stream.on('text', (text: string) => {
-        if (!closed) controller.enqueue(encoder.encode(text))
+        if (!closed) {
+          try { controller.enqueue(encoder.encode(text)) }
+          catch { closed = true }
+        }
       })
       stream.on('end', () => {
-        if (!closed) { closed = true; controller.close() }
+        if (!closed) {
+          closed = true
+          try { controller.close() } catch { /* already closed */ }
+        }
       })
       stream.on('error', (_error: Error) => {
         if (!closed) {
           closed = true
-          controller.enqueue(encoder.encode('\n\n[Errore: servizio temporaneamente non disponibile.]'))
-          controller.close()
+          try {
+            controller.enqueue(encoder.encode('\n\n[Errore: servizio temporaneamente non disponibile.]'))
+            controller.close()
+          } catch { /* controller already closed by client disconnect */ }
         }
       })
     },

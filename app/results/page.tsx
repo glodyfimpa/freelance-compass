@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useCallback, useMemo } from 'react'
+import { useEffect, useState, useCallback, useMemo, useRef } from 'react'
 import Link from 'next/link'
 import type { FormData, CalcoloNettoResult } from '@/lib/types'
 import { calcolaNettoPerRuolo } from '@/lib/calculator'
@@ -90,6 +90,17 @@ function ResultsContent() {
   }, [formData])
 
   const [activeCard, setActiveCard] = useState<number | null>(null)
+  const headerRef = useRef<HTMLDivElement>(null)
+  const [headerHeight, setHeaderHeight] = useState(0)
+
+  useEffect(() => {
+    if (!headerRef.current) return
+    const observer = new ResizeObserver(([entry]) => {
+      setHeaderHeight(entry.contentRect.height)
+    })
+    observer.observe(headerRef.current)
+    return () => observer.disconnect()
+  }, [])
 
   const handleCardClick = useCallback((index: number) => {
     setActiveCard(prev => prev === index ? null : index)
@@ -176,26 +187,28 @@ function ResultsContent() {
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-12">
-      <header className="mb-6 text-center">
-        <h1 className="text-3xl font-semibold tracking-tight text-gray-900">
-          La tua analisi
-        </h1>
-        <p className="mt-2 text-sm text-gray-400">
-          {streamComplete
-            ? 'Analisi completata.'
-            : 'Analisi in corso...'}
-        </p>
-      </header>
+      <div ref={headerRef} className="sticky top-0 z-[100] bg-[#f7f8fa] pb-4">
+        <header className="mb-6 text-center">
+          <h1 className="text-3xl font-semibold tracking-tight text-gray-900">
+            La tua analisi
+          </h1>
+          <p className="mt-2 text-sm text-gray-400">
+            {streamComplete
+              ? 'Analisi completata.'
+              : 'Analisi in corso...'}
+          </p>
+        </header>
 
-      {formData && <ProfileBadges formData={formData} />}
+        {formData && <ProfileBadges formData={formData} />}
 
-      {kpiData && (
-        <KpiCards
-          risultato={kpiData.risultato}
-          tariffaObiettivo={kpiData.tariffaObiettivo}
-          tariffaAttuale={formData!.tariffaGiornaliera}
-        />
-      )}
+        {kpiData && (
+          <KpiCards
+            risultato={kpiData.risultato}
+            tariffaObiettivo={kpiData.tariffaObiettivo}
+            tariffaAttuale={formData!.tariffaGiornaliera}
+          />
+        )}
+      </div>
 
       <div>
         {[
@@ -207,7 +220,7 @@ function ResultsContent() {
             key={i}
             className="sticky transition-[margin] duration-500 ease-out"
             style={{
-              top: `${20 + i * 25}px`,
+              top: `${headerHeight + 10 + i * 25}px`,
               zIndex: activeCard === i ? 50 : 10 + i,
               marginBottom: activeCard !== null && i < activeCard ? '-2rem' : '1.5rem',
               marginTop: activeCard !== null && i > activeCard ? '70vh' : '0',
