@@ -64,6 +64,39 @@ export default function Home() {
   const [codiceAteco, setCodiceAteco] = useState("");
   const [obiettivo, setObiettivo] = useState<Obiettivo | "">("");
 
+  function validateField(field: string) {
+    setErrors((prev) => {
+      const next = { ...prev };
+      delete next[field];
+
+      switch (field) {
+        case "anniEsperienza":
+          if (anniEsperienza === "") {
+            next.anniEsperienza = "Inserisci gli anni di esperienza";
+          } else if (anniEsperienza < 0 || anniEsperienza > 50) {
+            next.anniEsperienza = "Il valore deve essere tra 0 e 50";
+          }
+          break;
+        case "tariffaGiornaliera":
+          if (tariffaGiornaliera === "") {
+            next.tariffaGiornaliera = "Inserisci la tariffa giornaliera";
+          } else if (tariffaGiornaliera < 50 || tariffaGiornaliera > 2000) {
+            next.tariffaGiornaliera = "Il valore deve essere tra 50 e 2000";
+          }
+          break;
+        case "giorniFatturatiMese":
+          if (giorniFatturatiMese === "") {
+            next.giorniFatturatiMese = "Inserisci i giorni fatturati";
+          } else if (giorniFatturatiMese < 1 || giorniFatturatiMese > 23) {
+            next.giorniFatturatiMese = "Il valore deve essere tra 1 e 23";
+          }
+          break;
+      }
+
+      return next;
+    });
+  }
+
   function validateCurrentStep(): boolean {
     const newErrors: Record<string, string> = {};
 
@@ -252,6 +285,7 @@ export default function Home() {
                   onChange={(e) =>
                     setAnniEsperienza(e.target.value === "" ? "" : Number(e.target.value))
                   }
+                  onBlur={() => validateField("anniEsperienza")}
                   className={inputClasses}
                   placeholder="es. 6"
                 />
@@ -281,6 +315,7 @@ export default function Home() {
                         e.target.value === "" ? "" : Number(e.target.value)
                       )
                     }
+                    onBlur={() => validateField("tariffaGiornaliera")}
                     className={inputClasses + " pr-16"}
                     placeholder="es. 350"
                   />
@@ -339,6 +374,7 @@ export default function Home() {
                       e.target.value === "" ? "" : Number(e.target.value)
                     )
                   }
+                  onBlur={() => validateField("giorniFatturatiMese")}
                   className={inputClasses}
                   placeholder="es. 18"
                 />
@@ -419,7 +455,7 @@ export default function Home() {
       </div>
 
       {/* Navigation - fixed bottom on mobile */}
-      <div className="fixed bottom-0 left-0 right-0 z-50 border-t border-slate-200 bg-white px-4 py-3 sm:static sm:mt-0 sm:border-0 sm:bg-transparent sm:p-0">
+      <div className="fixed bottom-0 left-0 right-0 z-50 border-t border-slate-200 bg-white px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:static sm:mt-0 sm:border-0 sm:bg-transparent sm:p-0">
         <div className="mx-auto flex max-w-xl items-center justify-between sm:mt-8">
           {currentStep > 1 ? (
             <button

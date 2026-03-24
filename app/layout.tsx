@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
@@ -15,6 +15,11 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Freelance Compass",
   description: "Analisi tariffa e posizionamento per freelance IT in Italia",
+};
+
+export const viewport: Viewport = {
+  themeColor: '#F8FAFC',
+  viewportFit: 'cover' as const,
 };
 
 export default function RootLayout({
