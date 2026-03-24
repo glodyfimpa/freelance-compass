@@ -33,15 +33,14 @@ describe("Multi-step form (3 steps)", () => {
     expect(screen.getByRole("button", { name: /Fullstack Developer/i })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /DevOps\/SRE\/Cloud/i })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /Data Engineer\/ML/i })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /^Altro/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Altro.*Ruolo non in lista/i })).toBeInTheDocument();
   });
 
-  it("step 1 has optional Stack dropdown", () => {
+  it("step 1 has optional Stack chips", () => {
     render(<Home />);
-    const stackSelect = screen.getByLabelText(/Stack tecnologico/i) as HTMLSelectElement;
-    expect(stackSelect).toBeInTheDocument();
-    const options = Array.from(stackSelect.options).map((o) => o.text);
-    expect(options).toContain("Java/Spring");
+    expect(screen.getByText(/Stack tecnologico/i)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Java/Spring" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Node.js" })).toBeInTheDocument();
   });
 
   it("step 1 has anni di esperienza input", () => {
@@ -219,7 +218,7 @@ describe("Multi-step form (3 steps)", () => {
     render(<Home />);
     // Step 1
     fireEvent.click(screen.getByText("Backend Developer"));
-    fireEvent.change(screen.getByLabelText(/Stack tecnologico/i), { target: { value: "java-spring" } });
+    fireEvent.click(screen.getByRole("button", { name: "Java/Spring" }));
     fireEvent.change(screen.getByLabelText("Anni di esperienza"), { target: { value: "6" } });
     fireEvent.click(screen.getByText("Avanti"));
     // Step 2

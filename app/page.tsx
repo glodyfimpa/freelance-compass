@@ -218,22 +218,25 @@ export default function Home() {
               </div>
 
               <div>
-                <label htmlFor="stack" className={labelClasses}>
+                <label className={labelClasses}>
                   Stack tecnologico <span className="text-slate-400">(opzionale)</span>
                 </label>
-                <select
-                  id="stack"
-                  value={stack}
-                  onChange={(e) => setStack(e.target.value as Stack)}
-                  className={selectClasses}
-                >
-                  <option value="">Seleziona lo stack</option>
+                <div className="flex flex-wrap gap-2">
                   {STACK_OPTIONS.map((opt) => (
-                    <option key={opt.value} value={opt.value}>
+                    <button
+                      key={opt.value}
+                      type="button"
+                      onClick={() => setStack(stack === opt.value ? "" : opt.value)}
+                      className={`cursor-pointer rounded-lg border px-3 py-1.5 text-sm transition-all ${
+                        stack === opt.value
+                          ? "border-blue-600 bg-blue-50 text-blue-700 font-medium"
+                          : "border-slate-200 text-slate-600 hover:border-slate-300 hover:bg-slate-50"
+                      }`}
+                    >
                       {opt.label}
-                    </option>
+                    </button>
                   ))}
-                </select>
+                </div>
               </div>
 
               <div>
