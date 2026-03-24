@@ -407,44 +407,47 @@ export default function Home() {
             </div>
           )}
 
-          {/* Navigation */}
-          <div className="mt-8 flex items-center justify-between">
-            {currentStep > 1 ? (
-              <button
-                type="button"
-                onClick={handleBack}
-                className="cursor-pointer rounded-xl px-5 py-3 text-sm font-semibold text-[var(--muted)] hover:text-[var(--foreground)] hover:bg-slate-100 transition-colors focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/20"
-              >
-                Indietro
-              </button>
-            ) : (
-              <div />
-            )}
-
-            {currentStep < TOTAL_STEPS ? (
-              <button
-                type="button"
-                onClick={handleNext}
-                className="cursor-pointer rounded-xl bg-[var(--primary)] px-8 py-3 text-sm font-semibold text-white hover:bg-[var(--primary-hover)] transition-colors focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/20 shadow-sm shadow-blue-200"
-              >
-                Avanti
-              </button>
-            ) : (
-              <button
-                type="button"
-                onClick={handleSubmit}
-                className="cursor-pointer rounded-xl bg-[var(--cta)] px-8 py-3 text-sm font-semibold text-white hover:bg-[var(--cta-hover)] transition-colors focus:outline-none focus:ring-2 focus:ring-[var(--cta)]/20 shadow-sm shadow-orange-200"
-              >
-                Analizza il mio profilo
-              </button>
-            )}
-          </div>
         </div>
 
         {/* Footer note */}
-        <p className="mt-6 text-center text-xs text-slate-400">
+        <p className="mt-6 text-center text-xs text-slate-400 mb-20 sm:mb-0">
           I tuoi dati restano sul tuo dispositivo. Nessun dato viene salvato.
         </p>
+      </div>
+
+      {/* Navigation - fixed bottom on mobile */}
+      <div className="fixed bottom-0 left-0 right-0 z-50 border-t border-slate-200 bg-white px-4 py-3 sm:static sm:mt-0 sm:border-0 sm:bg-transparent sm:p-0">
+        <div className="mx-auto flex max-w-xl items-center justify-between sm:mt-8">
+          {currentStep > 1 ? (
+            <button
+              type="button"
+              onClick={handleBack}
+              className="cursor-pointer rounded-xl px-5 py-3 text-sm font-semibold text-[var(--muted)] hover:text-[var(--foreground)] hover:bg-slate-100 transition-colors focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/20"
+            >
+              Indietro
+            </button>
+          ) : (
+            <div />
+          )}
+
+          {currentStep < TOTAL_STEPS ? (
+            <button
+              type="button"
+              onClick={handleNext}
+              className="cursor-pointer rounded-xl bg-[var(--primary)] px-8 py-3 text-sm font-semibold text-white hover:bg-[var(--primary-hover)] transition-colors focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/20 shadow-sm shadow-blue-200"
+            >
+              Avanti
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={handleSubmit}
+              className="cursor-pointer rounded-xl bg-[var(--cta)] px-8 py-3 text-sm font-semibold text-white hover:bg-[var(--cta-hover)] transition-colors focus:outline-none focus:ring-2 focus:ring-[var(--cta)]/20 shadow-sm shadow-orange-200"
+            >
+              Analizza il mio profilo
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );
