@@ -177,13 +177,13 @@ describe("Multi-step form (3 steps)", () => {
     render(<Home />);
     goToStep(3);
     expect(screen.queryByText("Avanti")).not.toBeInTheDocument();
-    expect(screen.getByText("Analizza il mio profilo")).toBeInTheDocument();
+    expect(screen.getByText("Analizza il tuo profilo")).toBeInTheDocument();
   });
 
   it("validates missing obiettivo on submit", () => {
     render(<Home />);
     goToStep(3);
-    fireEvent.click(screen.getByText("Analizza il mio profilo"));
+    fireEvent.click(screen.getByText("Analizza il tuo profilo"));
     expect(screen.getByText("Seleziona un obiettivo")).toBeInTheDocument();
   });
 
@@ -228,7 +228,7 @@ describe("Multi-step form (3 steps)", () => {
     fireEvent.click(screen.getByText("Avanti"));
     // Step 3
     fireEvent.click(screen.getByText("Ottimizzare il netto"));
-    fireEvent.click(screen.getByText("Analizza il mio profilo"));
+    fireEvent.click(screen.getByText("Analizza il tuo profilo"));
 
     expect(mockPush).toHaveBeenCalledWith("/results");
     const stored = sessionStorage.getItem("freelance-compass-data");
@@ -261,7 +261,7 @@ describe("Multi-step form (3 steps)", () => {
     fireEvent.click(screen.getByText("Avanti"));
     // Step 3
     fireEvent.click(screen.getByText("Aumentare la tariffa"));
-    fireEvent.click(screen.getByText("Analizza il mio profilo"));
+    fireEvent.click(screen.getByText("Analizza il tuo profilo"));
 
     const stored = sessionStorage.getItem("freelance-compass-data");
     const data = JSON.parse(stored!);

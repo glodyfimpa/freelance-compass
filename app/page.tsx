@@ -445,9 +445,9 @@ export default function Home() {
             <button
               type="button"
               onClick={handleSubmit}
-              className="cursor-pointer rounded-xl bg-[var(--cta)] px-8 py-3 text-sm font-semibold text-white hover:bg-[var(--cta-hover)] transition-colors focus:outline-none focus:ring-2 focus:ring-[var(--cta)]/20 shadow-sm shadow-orange-200"
+              className="cursor-pointer rounded-xl bg-blue-600 px-8 py-3 text-sm font-semibold text-white hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500/20"
             >
-              Analizza il mio profilo
+              Analizza il tuo profilo
             </button>
           )}
         </div>
