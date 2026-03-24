@@ -434,7 +434,7 @@ export default function Home() {
             <button
               type="button"
               onClick={handleNext}
-              className="cursor-pointer rounded-xl bg-[var(--primary)] px-8 py-3 text-sm font-semibold text-white hover:bg-[var(--primary-hover)] transition-colors focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/20 shadow-sm shadow-blue-200"
+              className="cursor-pointer rounded-xl bg-blue-600 px-8 py-3 text-sm font-semibold text-white hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500/20"
             >
               Avanti
             </button>
