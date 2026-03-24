@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useCallback, useMemo, useRef } from 'react'
+import { useEffect, useState, useCallback, useMemo } from 'react'
 import Link from 'next/link'
 import type { FormData, CalcoloNettoResult } from '@/lib/types'
 import { calcolaNettoPerRuolo } from '@/lib/calculator'
@@ -36,11 +36,11 @@ function ProfileBadges({ formData }: { formData: FormData }) {
   if (formData.stack) badges.splice(1, 0, formData.stack)
 
   return (
-    <div className="mb-6 flex flex-wrap gap-2 justify-center">
+    <div className="flex flex-wrap gap-2 justify-center">
       {badges.map((badge) => (
         <span
           key={badge}
-          className="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600"
+          className="rounded-full bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-600"
         >
           {badge}
         </span>
@@ -88,51 +88,6 @@ function ResultsContent() {
     }
     return { risultato, tariffaObiettivo: tariffaObj }
   }, [formData])
-
-  const [activeCard, setActiveCard] = useState<number | null>(null)
-  const headerRef = useRef<HTMLDivElement>(null)
-  const [headerHeight, setHeaderHeight] = useState(0)
-
-  useEffect(() => {
-    if (!headerRef.current) return
-    const observer = new ResizeObserver(([entry]) => {
-      setHeaderHeight(entry.contentRect.height)
-    })
-    observer.observe(headerRef.current)
-    return () => observer.disconnect()
-  }, [])
-
-  const handleCardClick = useCallback((index: number) => {
-    setActiveCard(prev => prev === index ? null : index)
-  }, [])
-
-  const cardRefs = useRef<(HTMLDivElement | null)[]>([])
-  const [stuckCards, setStuckCards] = useState<Set<number>>(new Set())
-
-  useEffect(() => {
-    if (!headerHeight) return
-    const stickyTops = [0, 1, 2].map(i => headerHeight + 10 + i * 25)
-    let rafId: number
-
-    const onScroll = () => {
-      cancelAnimationFrame(rafId)
-      rafId = requestAnimationFrame(() => {
-        const next = new Set<number>()
-        cardRefs.current.forEach((el, i) => {
-          if (!el) return
-          if (el.getBoundingClientRect().top <= stickyTops[i] + 1) next.add(i)
-        })
-        setStuckCards(prev => {
-          if (prev.size === next.size && [...prev].every(v => next.has(v))) return prev
-          return next
-        })
-      })
-    }
-
-    window.addEventListener('scroll', onScroll, { passive: true })
-    onScroll()
-    return () => { window.removeEventListener('scroll', onScroll); cancelAnimationFrame(rafId) }
-  }, [headerHeight])
 
   const fetchAnalisi = useCallback(async (fd: FormData) => {
     try {
@@ -199,12 +154,12 @@ function ResultsContent() {
 
   if (errore) {
     return (
-      <div className="mx-auto max-w-3xl px-4 py-12">
-        <div className="rounded-xl border border-red-200 bg-red-50 p-6 text-center">
+      <div className="mx-auto max-w-3xl px-4 py-16">
+        <div className="rounded-2xl border border-red-200 bg-red-50 p-8 text-center">
           <p className="text-red-700">{errore}</p>
           <Link
             href="/"
-            className="mt-4 inline-block rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+            className="mt-6 inline-block cursor-pointer rounded-xl bg-[var(--primary)] px-6 py-3 text-sm font-semibold text-white hover:bg-[var(--primary-hover)] transition-colors focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/20"
           >
             Nuova analisi
           </Link>
@@ -215,44 +170,52 @@ function ResultsContent() {
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-12">
-      <div ref={headerRef} className="sticky top-0 z-[100] bg-[#f7f8fa] pb-4">
-        <header className="mb-6 text-center">
-          <h1 className="text-3xl font-semibold tracking-tight text-gray-900">
-            La tua analisi
-          </h1>
-          {streamComplete && (
-            <p className="mt-2 text-sm text-gray-400">Analisi completata.</p>
-          )}
-        </header>
+      {/* Header */}
+      <header className="mb-8 text-center">
+        <h1 className="text-4xl font-bold tracking-tight text-[var(--foreground)] sm:text-5xl">
+          La tua analisi
+        </h1>
+        {streamComplete && (
+          <p className="mt-3 text-sm text-[var(--muted)]">Analisi completata</p>
+        )}
+      </header>
 
-        {formData && <ProfileBadges formData={formData} />}
+      {/* Profile badges */}
+      {formData && (
+        <div className="mb-8">
+          <ProfileBadges formData={formData} />
+        </div>
+      )}
 
-        {kpiData && (
+      {/* KPI cards */}
+      {kpiData && (
+        <div className="mb-10">
           <KpiCards
             risultato={kpiData.risultato}
             tariffaObiettivo={kpiData.tariffaObiettivo}
             tariffaAttuale={formData!.tariffaGiornaliera}
           />
-        )}
-      </div>
+        </div>
+      )}
 
+      {/* AI blocks */}
       {blocks.benchmark.stato === 'loading' ? (
-        <div className="flex flex-col items-center justify-center py-16">
+        <div className="flex flex-col items-center justify-center py-20">
           <div className="flex items-center gap-2">
-            <span className="h-2 w-2 animate-pulse rounded-full bg-blue-500" />
+            <span className="h-2.5 w-2.5 animate-pulse rounded-full bg-[var(--primary)]" />
             <span
-              className="h-2 w-2 animate-pulse rounded-full bg-blue-500"
+              className="h-2.5 w-2.5 animate-pulse rounded-full bg-[var(--primary)]"
               style={{ animationDelay: '0.3s' }}
             />
             <span
-              className="h-2 w-2 animate-pulse rounded-full bg-blue-500"
+              className="h-2.5 w-2.5 animate-pulse rounded-full bg-[var(--primary)]"
               style={{ animationDelay: '0.6s' }}
             />
           </div>
-          <p className="mt-4 text-sm text-gray-400">Analisi del tuo profilo in corso...</p>
+          <p className="mt-4 text-sm text-[var(--muted)]">Analisi del tuo profilo in corso...</p>
         </div>
       ) : (
-        <div>
+        <div className="space-y-6">
           {[
             { block: blocks.benchmark, variant: 'default' as const },
             { block: blocks.analisi, variant: 'default' as const },
@@ -260,33 +223,25 @@ function ResultsContent() {
           ].map(({ block, variant }, i) => (
             <div
               key={i}
-              ref={el => { cardRefs.current[i] = el }}
-              className="sticky transition-[margin] duration-500 ease-out animate-[fadeSlideIn_0.5s_ease-out_both]"
-              style={{
-                top: `${headerHeight + 10 + i * 25}px`,
-                zIndex: activeCard === i ? 50 : 10 + i,
-                marginBottom: activeCard !== null && i < activeCard ? '-2rem' : '1.5rem',
-                marginTop: activeCard !== null && i > activeCard ? '70vh' : '0',
-                animationDelay: `${i * 150}ms`,
-              }}
+              className="animate-[fadeSlideIn_0.5s_ease-out_both]"
+              style={{ animationDelay: `${i * 150}ms` }}
             >
               <ResultBlock
                 titolo={block.titolo}
                 contenuto={block.contenuto}
                 stato={block.stato}
                 variant={variant}
-                onClick={() => handleCardClick(i)}
-                maxHeight={stuckCards.has(i) ? `calc(100vh - ${headerHeight + 10 + i * 25 + 24}px)` : undefined}
               />
             </div>
           ))}
         </div>
       )}
 
-      <div className="mt-8 text-center">
+      {/* CTA */}
+      <div className="mt-12 text-center">
         <Link
           href="/"
-          className="inline-block rounded-lg bg-blue-600 px-6 py-2.5 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+          className="inline-block cursor-pointer rounded-xl bg-blue-600 px-8 py-3 text-sm font-semibold text-white hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500/20"
         >
           Nuova analisi
         </Link>

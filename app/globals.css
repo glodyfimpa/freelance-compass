@@ -1,8 +1,17 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f7f8fa;
-  --foreground: #171717;
+  --background: #F8FAFC;
+  --foreground: #1E293B;
+  --primary: #2563EB;
+  --primary-hover: #1D4ED8;
+  --cta: #F97316;
+  --cta-hover: #EA580C;
+  --muted: #64748B;
+  --border: #E2E8F0;
+  --card: #FFFFFF;
+  --error: #EF4444;
+  --success: #22C55E;
 }
 
 @theme inline {
@@ -26,4 +35,9 @@ body {
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }

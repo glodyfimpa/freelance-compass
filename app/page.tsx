@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import FormStep from "@/components/FormStep";
 import type {
   Ruolo,
   Stack,
@@ -11,25 +10,21 @@ import type {
   FormData,
 } from "@/lib/types";
 
-const TOTAL_STEPS = 7;
+const TOTAL_STEPS = 3;
 
 const STEP_LABELS: Record<number, string> = {
-  1: 'Ruolo e Stack',
-  2: 'Esperienza',
-  3: 'Tariffa',
-  4: 'Regime Fiscale',
-  5: 'Giorni Fatturati',
-  6: 'Codice ATECO',
-  7: 'Obiettivo',
+  1: "Chi sei",
+  2: "I tuoi numeri",
+  3: "Il tuo obiettivo",
 };
 
-const RUOLO_OPTIONS: { value: Ruolo; label: string }[] = [
-  { value: "backend", label: "Backend Developer" },
-  { value: "frontend", label: "Frontend Developer" },
-  { value: "fullstack", label: "Fullstack Developer" },
-  { value: "devops", label: "DevOps/SRE/Cloud" },
-  { value: "data", label: "Data Engineer/ML" },
-  { value: "altro", label: "Altro" },
+const RUOLO_OPTIONS: { value: Ruolo; label: string; desc: string }[] = [
+  { value: "backend", label: "Backend Developer", desc: "API, microservizi, database" },
+  { value: "frontend", label: "Frontend Developer", desc: "UI, React, Vue, Angular" },
+  { value: "fullstack", label: "Fullstack Developer", desc: "End-to-end development" },
+  { value: "devops", label: "DevOps/SRE/Cloud", desc: "Infrastruttura, CI/CD, cloud" },
+  { value: "data", label: "Data Engineer/ML", desc: "Pipeline dati, ML, analytics" },
+  { value: "altro", label: "Altro", desc: "Ruolo non in lista" },
 ];
 
 const STACK_OPTIONS: { value: Stack; label: string }[] = [
@@ -45,11 +40,11 @@ const STACK_OPTIONS: { value: Stack; label: string }[] = [
   { value: "altro", label: "Altro" },
 ];
 
-const OBIETTIVO_OPTIONS: { value: Obiettivo; label: string }[] = [
-  { value: "aumentare-tariffa", label: "Aumentare la tariffa" },
-  { value: "trovare-clienti", label: "Trovare clienti migliori" },
-  { value: "uscire-body-rental", label: "Uscire dal body rental" },
-  { value: "ottimizzare-netto", label: "Ottimizzare il netto" },
+const OBIETTIVO_OPTIONS: { value: Obiettivo; label: string; desc: string; icon: string }[] = [
+  { value: "aumentare-tariffa", label: "Aumentare la tariffa", desc: "Scopri quanto potresti chiedere", icon: "\u2191" },
+  { value: "trovare-clienti", label: "Trovare clienti migliori", desc: "Posizionati per clienti diretti", icon: "\u{1F3AF}" },
+  { value: "uscire-body-rental", label: "Uscire dal body rental", desc: "Piano per lavorare in proprio", icon: "\u{1F680}" },
+  { value: "ottimizzare-netto", label: "Ottimizzare il netto", desc: "Massimizza il tuo guadagno reale", icon: "\u{1F4B0}" },
 ];
 
 export default function Home() {
@@ -57,7 +52,6 @@ export default function Home() {
   const [currentStep, setCurrentStep] = useState(1);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  // Form state
   const [ruolo, setRuolo] = useState<Ruolo | "">("");
   const [stack, setStack] = useState<Stack | "">("");
   const [anniEsperienza, setAnniEsperienza] = useState<number | "">("");
@@ -73,43 +67,28 @@ export default function Home() {
 
     switch (currentStep) {
       case 1:
-        if (!ruolo) {
-          newErrors.ruolo = "Seleziona un ruolo";
-        }
-        break;
-      case 2:
+        if (!ruolo) newErrors.ruolo = "Seleziona un ruolo";
         if (anniEsperienza === "") {
           newErrors.anniEsperienza = "Inserisci gli anni di esperienza";
         } else if (anniEsperienza < 0 || anniEsperienza > 50) {
           newErrors.anniEsperienza = "Il valore deve essere tra 0 e 50";
         }
         break;
-      case 3:
+      case 2:
         if (tariffaGiornaliera === "") {
           newErrors.tariffaGiornaliera = "Inserisci la tariffa giornaliera";
         } else if (tariffaGiornaliera < 50 || tariffaGiornaliera > 2000) {
           newErrors.tariffaGiornaliera = "Il valore deve essere tra 50 e 2000";
         }
-        break;
-      case 4:
-        if (!regime) {
-          newErrors.regime = "Seleziona il regime fiscale";
-        }
-        break;
-      case 5:
+        if (!regime) newErrors.regime = "Seleziona il regime fiscale";
         if (giorniFatturatiMese === "") {
           newErrors.giorniFatturatiMese = "Inserisci i giorni fatturati";
         } else if (giorniFatturatiMese < 1 || giorniFatturatiMese > 23) {
           newErrors.giorniFatturatiMese = "Il valore deve essere tra 1 e 23";
         }
         break;
-      case 6:
-        // ATECO step: no required validation (toggle defaults to false)
-        break;
-      case 7:
-        if (!obiettivo) {
-          newErrors.obiettivo = "Seleziona un obiettivo";
-        }
+      case 3:
+        if (!obiettivo) newErrors.obiettivo = "Seleziona un obiettivo";
         break;
     }
 
@@ -140,72 +119,107 @@ export default function Home() {
       obiettivo: obiettivo as Obiettivo,
     };
 
-    if (stack) {
-      formData.stack = stack as Stack;
-    }
+    if (stack) formData.stack = stack as Stack;
+    if (atecoConosciuto && codiceAteco) formData.codiceAteco = codiceAteco;
 
-    if (atecoConosciuto && codiceAteco) {
-      formData.codiceAteco = codiceAteco;
-    }
-
-    sessionStorage.setItem('freelance-compass-data', JSON.stringify(formData));
-    router.push('/results');
+    sessionStorage.setItem("freelance-compass-data", JSON.stringify(formData));
+    router.push("/results");
   }
 
   const inputClasses =
-    "w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-base text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20";
-  const selectClasses = inputClasses + " appearance-none";
-  const labelClasses = "block text-sm font-medium text-gray-700 mb-1.5";
-  const errorClasses = "mt-1.5 text-sm text-red-600";
+    "w-full rounded-xl border border-[var(--border)] bg-white px-4 py-3.5 text-base text-[var(--foreground)] placeholder:text-slate-400 focus:border-[var(--primary)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/20 transition-colors";
+  const selectClasses = inputClasses + " appearance-none cursor-pointer";
+  const labelClasses = "block text-sm font-medium text-slate-600 mb-2";
+  const errorClasses = "mt-2 text-sm text-[var(--error)]";
 
   return (
-    <div className="flex min-h-screen items-center justify-center px-4 py-8">
-      <div className="w-full max-w-lg rounded-2xl bg-white p-8 shadow-md">
-        <h1 className="mb-1 text-center text-3xl font-semibold tracking-tight text-gray-900">
+    <div className="flex min-h-dvh flex-col items-center justify-center px-4 py-8">
+      {/* Header */}
+      <div className="mb-10 text-center">
+        <h1 className="text-4xl font-bold tracking-tight text-[var(--foreground)] sm:text-5xl">
           Freelance Compass
         </h1>
-        <p className="mb-6 text-center text-sm text-gray-400">
-          Scopri se la tua tariffa e in linea con il mercato
+        <p className="mt-3 text-lg text-[var(--muted)]">
+          Quanto dovresti guadagnare davvero?
         </p>
+      </div>
 
-        {/* Progress bar */}
-        <div className="mb-2 h-1.5 w-full rounded-full bg-gray-100">
-          <div
-            className="h-1.5 rounded-full bg-blue-600 transition-all duration-300"
-            style={{ width: `${(currentStep / TOTAL_STEPS) * 100}%` }}
-          />
-        </div>
-        <p className="mb-8 text-right text-xs text-gray-400">
-          {currentStep}/{TOTAL_STEPS} {STEP_LABELS[currentStep]}
-        </p>
-
-        {/* Step 1: Ruolo e Stack */}
-        {currentStep === 1 && (
-          <FormStep title="Ruolo e Stack">
-            <div className="space-y-4">
-              <div>
-                <label htmlFor="ruolo" className={labelClasses}>
-                  Ruolo
-                </label>
-                <select
-                  id="ruolo"
-                  value={ruolo}
-                  onChange={(e) => setRuolo(e.target.value as Ruolo)}
-                  className={selectClasses}
+      {/* Card */}
+      <div className="w-full max-w-xl">
+        {/* Progress */}
+        <div className="mb-8 flex items-center gap-3">
+          {[1, 2, 3].map((step) => (
+            <div key={step} className="flex-1">
+              <div className="flex items-center gap-2 mb-2">
+                <div
+                  className={`flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold transition-colors ${
+                    step < currentStep
+                      ? "bg-[var(--primary)] text-white"
+                      : step === currentStep
+                        ? "bg-[var(--primary)] text-white"
+                        : "bg-slate-200 text-slate-400"
+                  }`}
                 >
-                  <option value="">Seleziona il tuo ruolo</option>
+                  {step < currentStep ? "\u2713" : step}
+                </div>
+                <span
+                  className={`text-xs font-medium hidden sm:block ${
+                    step <= currentStep ? "text-[var(--foreground)]" : "text-slate-400"
+                  }`}
+                >
+                  {STEP_LABELS[step]}
+                </span>
+              </div>
+              <div className="h-1 rounded-full bg-slate-200">
+                <div
+                  className="h-1 rounded-full bg-[var(--primary)] transition-all duration-500"
+                  style={{
+                    width: step < currentStep ? "100%" : step === currentStep ? "50%" : "0%",
+                  }}
+                />
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Form card */}
+        <div className="rounded-2xl bg-white p-8 shadow-lg shadow-slate-200/50 border border-slate-100">
+          <h2 className="mb-6 text-2xl font-bold text-[var(--foreground)]">
+            {STEP_LABELS[currentStep]}
+          </h2>
+
+          {/* Step 1: Chi sei */}
+          {currentStep === 1 && (
+            <div className="space-y-5 animate-[fadeIn_0.3s_ease-out]">
+              <div>
+                <label className={labelClasses}>Qual è il tuo ruolo?</label>
+                <div className="grid grid-cols-2 gap-3">
                   {RUOLO_OPTIONS.map((opt) => (
-                    <option key={opt.value} value={opt.value}>
-                      {opt.label}
-                    </option>
+                    <button
+                      key={opt.value}
+                      type="button"
+                      onClick={() => setRuolo(opt.value)}
+                      className={`cursor-pointer rounded-xl border-2 p-3 text-left transition-all ${
+                        ruolo === opt.value
+                          ? "border-[var(--primary)] bg-blue-50 shadow-sm"
+                          : "border-slate-200 hover:border-slate-300 hover:bg-slate-50"
+                      }`}
+                    >
+                      <span className="block text-sm font-semibold text-[var(--foreground)]">
+                        {opt.label}
+                      </span>
+                      <span className="block text-xs text-[var(--muted)] mt-0.5">
+                        {opt.desc}
+                      </span>
+                    </button>
                   ))}
-                </select>
+                </div>
                 {errors.ruolo && <p className={errorClasses}>{errors.ruolo}</p>}
               </div>
 
               <div>
                 <label htmlFor="stack" className={labelClasses}>
-                  Stack tecnologico (opzionale)
+                  Stack tecnologico <span className="text-slate-400">(opzionale)</span>
                 </label>
                 <select
                   id="stack"
@@ -221,242 +235,213 @@ export default function Home() {
                   ))}
                 </select>
               </div>
-            </div>
-          </FormStep>
-        )}
 
-        {/* Step 2: Esperienza */}
-        {currentStep === 2 && (
-          <FormStep title="Esperienza">
-            <div>
-              <label htmlFor="anniEsperienza" className={labelClasses}>
-                Anni di esperienza
-              </label>
-              <input
-                id="anniEsperienza"
-                type="number"
-                min="0"
-                max="50"
-                value={anniEsperienza}
-                onChange={(e) =>
-                  setAnniEsperienza(
-                    e.target.value === "" ? "" : Number(e.target.value)
-                  )
-                }
-                className={inputClasses}
-                placeholder="es. 6"
-              />
-              {errors.anniEsperienza && (
-                <p className={errorClasses}>{errors.anniEsperienza}</p>
-              )}
-            </div>
-          </FormStep>
-        )}
-
-        {/* Step 3: Tariffa */}
-        {currentStep === 3 && (
-          <FormStep title="Tariffa">
-            <div>
-              <label htmlFor="tariffaGiornaliera" className={labelClasses}>
-                Tariffa giornaliera (EUR/giorno)
-              </label>
-              <input
-                id="tariffaGiornaliera"
-                type="number"
-                min="50"
-                max="2000"
-                value={tariffaGiornaliera}
-                onChange={(e) =>
-                  setTariffaGiornaliera(
-                    e.target.value === "" ? "" : Number(e.target.value)
-                  )
-                }
-                className={inputClasses}
-                placeholder="es. 350"
-              />
-              {errors.tariffaGiornaliera && (
-                <p className={errorClasses}>{errors.tariffaGiornaliera}</p>
-              )}
-            </div>
-          </FormStep>
-        )}
-
-        {/* Step 4: Regime Fiscale */}
-        {currentStep === 4 && (
-          <FormStep title="Regime Fiscale">
-            <fieldset className="space-y-3">
-              <div className="flex items-center gap-3">
+              <div>
+                <label htmlFor="anniEsperienza" className={labelClasses}>
+                  Anni di esperienza
+                </label>
                 <input
-                  id="forfettario5"
-                  type="radio"
-                  name="regime"
-                  value="forfettario5"
-                  checked={regime === "forfettario5"}
+                  id="anniEsperienza"
+                  type="number"
+                  min="0"
+                  max="50"
+                  value={anniEsperienza}
                   onChange={(e) =>
-                    setRegime(e.target.value as RegimeFiscale)
+                    setAnniEsperienza(e.target.value === "" ? "" : Number(e.target.value))
                   }
-                  className="h-5 w-5 text-blue-600 focus:ring-blue-500"
+                  className={inputClasses}
+                  placeholder="es. 6"
                 />
-                <label
-                  htmlFor="forfettario5"
-                  className="text-base text-gray-900"
-                >
-                  Forfettario 5% (primi 5 anni)
-                </label>
+                {errors.anniEsperienza && (
+                  <p className={errorClasses}>{errors.anniEsperienza}</p>
+                )}
               </div>
-              <div className="flex items-center gap-3">
-                <input
-                  id="forfettario15"
-                  type="radio"
-                  name="regime"
-                  value="forfettario15"
-                  checked={regime === "forfettario15"}
-                  onChange={(e) =>
-                    setRegime(e.target.value as RegimeFiscale)
-                  }
-                  className="h-5 w-5 text-blue-600 focus:ring-blue-500"
-                />
-                <label
-                  htmlFor="forfettario15"
-                  className="text-base text-gray-900"
-                >
-                  Forfettario 15% (dal 6{"\u00B0"} anno)
-                </label>
-              </div>
-              {errors.regime && <p className={errorClasses}>{errors.regime}</p>}
-            </fieldset>
-          </FormStep>
-        )}
-
-        {/* Step 5: Giorni Fatturati */}
-        {currentStep === 5 && (
-          <FormStep title="Giorni Fatturati">
-            <div>
-              <label htmlFor="giorniFatturatiMese" className={labelClasses}>
-                Giorni fatturati al mese
-              </label>
-              <input
-                id="giorniFatturatiMese"
-                type="number"
-                min="1"
-                max="23"
-                value={giorniFatturatiMese}
-                onChange={(e) =>
-                  setGiorniFatturatiMese(
-                    e.target.value === "" ? "" : Number(e.target.value)
-                  )
-                }
-                className={inputClasses}
-                placeholder="es. 20"
-              />
-              {errors.giorniFatturatiMese && (
-                <p className={errorClasses}>{errors.giorniFatturatiMese}</p>
-              )}
             </div>
-          </FormStep>
-        )}
+          )}
 
-        {/* Step 6: Codice ATECO */}
-        {currentStep === 6 && (
-          <FormStep title="Codice ATECO">
-            <div className="space-y-4">
-              <div className="flex items-center gap-3">
-                <input
-                  id="atecoConosciuto"
-                  type="checkbox"
-                  checked={atecoConosciuto}
-                  onChange={(e) => setAtecoConosciuto(e.target.checked)}
-                  className="h-5 w-5 rounded text-blue-600 focus:ring-blue-500"
-                />
-                <label
-                  htmlFor="atecoConosciuto"
-                  className="text-base text-gray-900"
-                >
-                  Conosco il mio codice ATECO
+          {/* Step 2: I tuoi numeri */}
+          {currentStep === 2 && (
+            <div className="space-y-5 animate-[fadeIn_0.3s_ease-out]">
+              <div>
+                <label htmlFor="tariffaGiornaliera" className={labelClasses}>
+                  Tariffa giornaliera
                 </label>
-              </div>
-
-              {atecoConosciuto && (
-                <div>
-                  <label htmlFor="codiceAteco" className={labelClasses}>
-                    Codice ATECO
-                  </label>
+                <div className="relative">
                   <input
-                    id="codiceAteco"
-                    type="text"
-                    value={codiceAteco}
-                    onChange={(e) => setCodiceAteco(e.target.value)}
-                    className={inputClasses}
-                    placeholder="es. 62.01.00"
-                  />
-                </div>
-              )}
-            </div>
-          </FormStep>
-        )}
-
-        {/* Step 7: Obiettivo */}
-        {currentStep === 7 && (
-          <FormStep title="Obiettivo">
-            <fieldset className="space-y-3">
-              {OBIETTIVO_OPTIONS.map((opt) => (
-                <div key={opt.value} className="flex items-center gap-3">
-                  <input
-                    id={opt.value}
-                    type="radio"
-                    name="obiettivo"
-                    value={opt.value}
-                    checked={obiettivo === opt.value}
+                    id="tariffaGiornaliera"
+                    type="number"
+                    min="50"
+                    max="2000"
+                    value={tariffaGiornaliera}
                     onChange={(e) =>
-                      setObiettivo(e.target.value as Obiettivo)
+                      setTariffaGiornaliera(
+                        e.target.value === "" ? "" : Number(e.target.value)
+                      )
                     }
-                    className="h-5 w-5 text-blue-600 focus:ring-blue-500"
+                    className={inputClasses + " pr-16"}
+                    placeholder="es. 350"
                   />
-                  <label
-                    htmlFor={opt.value}
-                    className="text-base text-gray-900"
+                  <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm font-medium text-slate-400">
+                    EUR/gg
+                  </span>
+                </div>
+                {errors.tariffaGiornaliera && (
+                  <p className={errorClasses}>{errors.tariffaGiornaliera}</p>
+                )}
+              </div>
+
+              <div>
+                <label className={labelClasses}>Regime fiscale</label>
+                <div className="grid grid-cols-2 gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setRegime("forfettario5")}
+                    className={`cursor-pointer rounded-xl border-2 p-4 text-left transition-all ${
+                      regime === "forfettario5"
+                        ? "border-[var(--primary)] bg-blue-50 shadow-sm"
+                        : "border-slate-200 hover:border-slate-300 hover:bg-slate-50"
+                    }`}
                   >
-                    {opt.label}
+                    <span className="block text-lg font-bold text-[var(--foreground)]">5%</span>
+                    <span className="block text-xs text-[var(--muted)]">Primi 5 anni</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setRegime("forfettario15")}
+                    className={`cursor-pointer rounded-xl border-2 p-4 text-left transition-all ${
+                      regime === "forfettario15"
+                        ? "border-[var(--primary)] bg-blue-50 shadow-sm"
+                        : "border-slate-200 hover:border-slate-300 hover:bg-slate-50"
+                    }`}
+                  >
+                    <span className="block text-lg font-bold text-[var(--foreground)]">15%</span>
+                    <span className="block text-xs text-[var(--muted)]">Dal 6° anno</span>
+                  </button>
+                </div>
+                {errors.regime && <p className={errorClasses}>{errors.regime}</p>}
+              </div>
+
+              <div>
+                <label htmlFor="giorniFatturatiMese" className={labelClasses}>
+                  Giorni fatturati al mese
+                </label>
+                <input
+                  id="giorniFatturatiMese"
+                  type="number"
+                  min="1"
+                  max="23"
+                  value={giorniFatturatiMese}
+                  onChange={(e) =>
+                    setGiorniFatturatiMese(
+                      e.target.value === "" ? "" : Number(e.target.value)
+                    )
+                  }
+                  className={inputClasses}
+                  placeholder="es. 18"
+                />
+                {errors.giorniFatturatiMese && (
+                  <p className={errorClasses}>{errors.giorniFatturatiMese}</p>
+                )}
+              </div>
+
+              <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+                <div className="flex items-center gap-3">
+                  <input
+                    id="atecoConosciuto"
+                    type="checkbox"
+                    checked={atecoConosciuto}
+                    onChange={(e) => setAtecoConosciuto(e.target.checked)}
+                    className="h-5 w-5 rounded border-slate-300 text-[var(--primary)] focus:ring-[var(--primary)]/20 cursor-pointer"
+                  />
+                  <label htmlFor="atecoConosciuto" className="text-sm font-medium text-[var(--foreground)] cursor-pointer">
+                    Conosco il mio codice ATECO
                   </label>
                 </div>
-              ))}
-              {errors.obiettivo && (
-                <p className={errorClasses}>{errors.obiettivo}</p>
-              )}
-            </fieldset>
-          </FormStep>
-        )}
-
-        {/* Navigation buttons */}
-        <div className="mt-8 flex justify-between gap-4">
-          {currentStep > 1 && (
-            <button
-              type="button"
-              onClick={handleBack}
-              className="rounded-lg border border-gray-300 px-6 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500/20 hover:bg-gray-50"
-            >
-              Indietro
-            </button>
+                {atecoConosciuto && (
+                  <div className="mt-3">
+                    <input
+                      id="codiceAteco"
+                      type="text"
+                      value={codiceAteco}
+                      onChange={(e) => setCodiceAteco(e.target.value)}
+                      className={inputClasses}
+                      placeholder="es. 62.01.00"
+                    />
+                  </div>
+                )}
+              </div>
+            </div>
           )}
 
-          {currentStep < TOTAL_STEPS ? (
-            <button
-              type="button"
-              onClick={handleNext}
-              className="ml-auto rounded-lg bg-blue-600 px-6 py-3 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-            >
-              Avanti
-            </button>
-          ) : (
-            <button
-              type="button"
-              onClick={handleSubmit}
-              className="ml-auto rounded-lg bg-blue-600 px-6 py-3 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-            >
-              Analizza
-            </button>
+          {/* Step 3: Obiettivo */}
+          {currentStep === 3 && (
+            <div className="animate-[fadeIn_0.3s_ease-out]">
+              <div className="space-y-3">
+                {OBIETTIVO_OPTIONS.map((opt) => (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    onClick={() => setObiettivo(opt.value)}
+                    className={`cursor-pointer w-full rounded-xl border-2 p-4 text-left transition-all flex items-center gap-4 ${
+                      obiettivo === opt.value
+                        ? "border-[var(--primary)] bg-blue-50 shadow-sm"
+                        : "border-slate-200 hover:border-slate-300 hover:bg-slate-50"
+                    }`}
+                  >
+                    <span className="text-2xl">{opt.icon}</span>
+                    <div>
+                      <span className="block text-base font-semibold text-[var(--foreground)]">
+                        {opt.label}
+                      </span>
+                      <span className="block text-sm text-[var(--muted)]">
+                        {opt.desc}
+                      </span>
+                    </div>
+                  </button>
+                ))}
+              </div>
+              {errors.obiettivo && <p className={errorClasses}>{errors.obiettivo}</p>}
+            </div>
           )}
+
+          {/* Navigation */}
+          <div className="mt-8 flex items-center justify-between">
+            {currentStep > 1 ? (
+              <button
+                type="button"
+                onClick={handleBack}
+                className="cursor-pointer rounded-xl px-5 py-3 text-sm font-semibold text-[var(--muted)] hover:text-[var(--foreground)] hover:bg-slate-100 transition-colors focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/20"
+              >
+                Indietro
+              </button>
+            ) : (
+              <div />
+            )}
+
+            {currentStep < TOTAL_STEPS ? (
+              <button
+                type="button"
+                onClick={handleNext}
+                className="cursor-pointer rounded-xl bg-[var(--primary)] px-8 py-3 text-sm font-semibold text-white hover:bg-[var(--primary-hover)] transition-colors focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/20 shadow-sm shadow-blue-200"
+              >
+                Avanti
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={handleSubmit}
+                className="cursor-pointer rounded-xl bg-[var(--cta)] px-8 py-3 text-sm font-semibold text-white hover:bg-[var(--cta-hover)] transition-colors focus:outline-none focus:ring-2 focus:ring-[var(--cta)]/20 shadow-sm shadow-orange-200"
+              >
+                Analizza il mio profilo
+              </button>
+            )}
+          </div>
         </div>
+
+        {/* Footer note */}
+        <p className="mt-6 text-center text-xs text-slate-400">
+          I tuoi dati restano sul tuo dispositivo. Nessun dato viene salvato.
+        </p>
       </div>
     </div>
   );

@@ -19,42 +19,45 @@ export default function KpiCards({ risultato, tariffaObiettivo, tariffaAttuale }
     : '0'
 
   return (
-    <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
       {/* Netto attuale */}
-      <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-        <p className="mb-1 text-xs font-medium uppercase tracking-wide text-gray-400">
+      <div className="rounded-2xl bg-white p-6 shadow-sm border border-slate-100">
+        <p className="text-sm font-medium text-[var(--muted)] mb-3">
           Netto annuo attuale
         </p>
-        <p className="text-2xl font-bold text-gray-900">
-          {formatEur(calcoloAttuale.netto)} <span className="text-base font-normal text-gray-400">EUR</span>
+        <p className="text-3xl font-bold tracking-tight text-[var(--foreground)]">
+          {formatEur(calcoloAttuale.netto)}
+          <span className="ml-1 text-sm font-normal text-slate-400">EUR</span>
         </p>
-        <p className="mt-1 text-xs text-gray-400">
+        <p className="mt-2 text-sm text-slate-400">
           {formatEur(tariffaAttuale)} EUR/giorno
         </p>
       </div>
 
       {/* Netto obiettivo */}
-      <div className="rounded-xl border border-blue-200 bg-blue-50/60 p-5 shadow-sm">
-        <p className="mb-1 text-xs font-medium uppercase tracking-wide text-blue-500">
+      <div className="rounded-2xl bg-blue-50 p-6 shadow-sm border border-blue-100">
+        <p className="text-sm font-medium text-[var(--primary)] mb-3">
           Netto annuo obiettivo
         </p>
-        <p className="text-2xl font-bold text-blue-700">
-          {formatEur(calcoloObiettivo.netto)} <span className="text-base font-normal text-blue-400">EUR</span>
+        <p className="text-3xl font-bold tracking-tight text-[var(--primary)]">
+          {formatEur(calcoloObiettivo.netto)}
+          <span className="ml-1 text-sm font-normal text-blue-400">EUR</span>
         </p>
-        <p className="mt-1 text-xs text-blue-400">
+        <p className="mt-2 text-sm text-blue-400">
           {formatEur(tariffaObiettivo)} EUR/giorno
         </p>
       </div>
 
       {/* Delta */}
-      <div className="rounded-xl border border-emerald-200 bg-emerald-50/60 p-5 shadow-sm">
-        <p className="mb-1 text-xs font-medium uppercase tracking-wide text-emerald-500">
+      <div className="rounded-2xl bg-emerald-50 p-6 shadow-sm border border-emerald-100">
+        <p className="text-sm font-medium text-emerald-600 mb-3">
           Potenziale guadagno
         </p>
-        <p className="text-2xl font-bold text-emerald-700">
-          +{formatEur(deltaNetto)} <span className="text-base font-normal text-emerald-400">EUR</span>
+        <p className="text-3xl font-bold tracking-tight text-emerald-600">
+          +{formatEur(deltaNetto)}
+          <span className="ml-1 text-sm font-normal text-emerald-400">EUR</span>
         </p>
-        <p className="mt-1 text-xs text-emerald-500 font-medium">
+        <p className="mt-2 text-sm font-medium text-emerald-500">
           +{deltaPercent}% rispetto ad oggi
         </p>
       </div>

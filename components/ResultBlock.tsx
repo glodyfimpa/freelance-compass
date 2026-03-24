@@ -9,55 +9,47 @@ interface ResultBlockProps {
   contenuto: string
   stato: BlockState
   variant?: 'default' | 'highlighted'
-  onClick?: () => void
-  maxHeight?: string
 }
 
 function SkeletonBlock() {
   return (
     <div className="animate-pulse space-y-3">
-      <div className="h-4 w-3/4 rounded bg-gray-200" />
-      <div className="h-4 w-full rounded bg-gray-200" />
-      <div className="h-4 w-5/6 rounded bg-gray-200" />
-      <div className="h-4 w-2/3 rounded bg-gray-200" />
+      <div className="h-4 w-3/4 rounded bg-slate-200" />
+      <div className="h-4 w-full rounded bg-slate-200" />
+      <div className="h-4 w-5/6 rounded bg-slate-200" />
+      <div className="h-4 w-2/3 rounded bg-slate-200" />
     </div>
   )
 }
 
 function StreamingIndicator() {
   return (
-    <span className="ml-2 inline-flex items-center gap-1 text-sm text-gray-400">
-      <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-blue-500" />
+    <span className="ml-2 inline-flex items-center gap-1">
+      <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[var(--primary)]" />
       <span
-        className="h-1.5 w-1.5 animate-pulse rounded-full bg-blue-500"
+        className="h-1.5 w-1.5 animate-pulse rounded-full bg-[var(--primary)]"
         style={{ animationDelay: '0.2s' }}
       />
       <span
-        className="h-1.5 w-1.5 animate-pulse rounded-full bg-blue-500"
+        className="h-1.5 w-1.5 animate-pulse rounded-full bg-[var(--primary)]"
         style={{ animationDelay: '0.4s' }}
       />
     </span>
   )
 }
 
-export default function ResultBlock({ titolo, contenuto, stato, variant = 'default', onClick, maxHeight }: ResultBlockProps) {
+export default function ResultBlock({ titolo, contenuto, stato, variant = 'default' }: ResultBlockProps) {
   const isHighlighted = variant === 'highlighted'
-
-  const baseClasses = 'min-h-[200px] rounded-xl p-6 shadow-lg'
-  const variantClasses = isHighlighted
-    ? 'border-l-4 border-l-blue-600 border border-blue-100 bg-white'
-    : 'border border-gray-200 bg-white'
-  const interactiveClasses = onClick
-    ? 'cursor-pointer transition-shadow duration-200 hover:shadow-xl'
-    : ''
 
   return (
     <section
-      className={`${baseClasses} ${variantClasses} ${interactiveClasses}`}
-      onClick={onClick}
-      style={maxHeight ? { maxHeight, overflowY: 'auto' } : undefined}
+      className={`rounded-2xl p-6 sm:p-8 border transition-all ${
+        isHighlighted
+          ? 'border-l-4 border-l-[var(--primary)] border-blue-100 bg-white shadow-md'
+          : 'border-slate-100 bg-white shadow-sm'
+      }`}
     >
-      <h2 className="mb-4 flex items-center text-xl font-semibold tracking-tight">
+      <h2 className="mb-4 flex items-center text-xl font-bold tracking-tight text-[var(--foreground)]">
         {titolo}
         {stato === 'streaming' && <StreamingIndicator />}
       </h2>
@@ -65,7 +57,7 @@ export default function ResultBlock({ titolo, contenuto, stato, variant = 'defau
       {stato === 'loading' ? (
         <SkeletonBlock />
       ) : (
-        <div className="prose prose-sm max-w-none">
+        <div className="prose prose-sm max-w-none prose-headings:text-[var(--foreground)] prose-p:text-slate-600 prose-strong:text-[var(--foreground)] prose-li:text-slate-600">
           <ReactMarkdown rehypePlugins={[rehypeSanitize]}>{contenuto}</ReactMarkdown>
         </div>
       )}
