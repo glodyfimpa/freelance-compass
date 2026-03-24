@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { TrendingUp, Target, Rocket, Coins } from "lucide-react";
+import type { ElementType } from "react";
 import type {
   Ruolo,
   Stack,
@@ -40,11 +42,11 @@ const STACK_OPTIONS: { value: Stack; label: string }[] = [
   { value: "altro", label: "Altro" },
 ];
 
-const OBIETTIVO_OPTIONS: { value: Obiettivo; label: string; desc: string; icon: string }[] = [
-  { value: "aumentare-tariffa", label: "Aumentare la tariffa", desc: "Scopri quanto potresti chiedere", icon: "\u2191" },
-  { value: "trovare-clienti", label: "Trovare clienti migliori", desc: "Posizionati per clienti diretti", icon: "\u{1F3AF}" },
-  { value: "uscire-body-rental", label: "Uscire dal body rental", desc: "Piano per lavorare in proprio", icon: "\u{1F680}" },
-  { value: "ottimizzare-netto", label: "Ottimizzare il netto", desc: "Massimizza il tuo guadagno reale", icon: "\u{1F4B0}" },
+const OBIETTIVO_OPTIONS: { value: Obiettivo; label: string; desc: string; icon: ElementType }[] = [
+  { value: "aumentare-tariffa", label: "Aumentare la tariffa", desc: "Scopri quanto potresti chiedere", icon: TrendingUp },
+  { value: "trovare-clienti", label: "Trovare clienti migliori", desc: "Posizionati per clienti diretti", icon: Target },
+  { value: "uscire-body-rental", label: "Uscire dal body rental", desc: "Piano per lavorare in proprio", icon: Rocket },
+  { value: "ottimizzare-netto", label: "Ottimizzare il netto", desc: "Massimizza il tuo guadagno reale", icon: Coins },
 ];
 
 export default function Home() {
@@ -133,58 +135,56 @@ export default function Home() {
   const errorClasses = "mt-2 text-sm text-[var(--error)]";
 
   return (
-    <div className="flex min-h-dvh flex-col items-center justify-center px-4 py-8">
+    <div className="flex min-h-dvh flex-col items-center px-4 py-6 sm:justify-center sm:py-8">
       {/* Header */}
-      <div className="mb-10 text-center">
-        <h1 className="text-4xl font-bold tracking-tight text-[var(--foreground)] sm:text-5xl">
+      <div className="mb-6 text-center sm:mb-10">
+        <h1 className="text-3xl font-bold tracking-tight text-[var(--foreground)] sm:text-5xl">
           Freelance Compass
         </h1>
-        <p className="mt-3 text-lg text-[var(--muted)]">
+        <p className="mt-2 text-base text-[var(--muted)] sm:mt-3 sm:text-lg">
           Quanto dovresti guadagnare davvero?
         </p>
       </div>
 
       {/* Card */}
       <div className="w-full max-w-xl">
-        {/* Progress */}
-        <div className="mb-8 flex items-center gap-3">
-          {[1, 2, 3].map((step) => (
-            <div key={step} className="flex-1">
-              <div className="flex items-center gap-2 mb-2">
-                <div
-                  className={`flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold transition-colors ${
-                    step < currentStep
-                      ? "bg-[var(--primary)] text-white"
-                      : step === currentStep
+        {/* Form card */}
+        <div className="rounded-2xl bg-white p-5 shadow-lg shadow-slate-200/50 border border-slate-100 sm:p-8">
+          {/* Progress */}
+          <div className="mb-5 sm:mb-8">
+            {/* Step circles */}
+            <div className="flex items-center justify-between mb-3">
+              {[1, 2, 3].map((step) => (
+                <div key={step} className="flex items-center gap-1.5 sm:gap-2">
+                  <div
+                    className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-bold transition-colors ${
+                      step <= currentStep
                         ? "bg-[var(--primary)] text-white"
                         : "bg-slate-200 text-slate-400"
-                  }`}
-                >
-                  {step < currentStep ? "\u2713" : step}
+                    }`}
+                  >
+                    {step < currentStep ? "\u2713" : step}
+                  </div>
+                  <span
+                    className={`text-xs font-medium ${
+                      step <= currentStep ? "text-[var(--foreground)]" : "text-slate-400"
+                    }`}
+                  >
+                    {STEP_LABELS[step]}
+                  </span>
                 </div>
-                <span
-                  className={`text-xs font-medium hidden sm:block ${
-                    step <= currentStep ? "text-[var(--foreground)]" : "text-slate-400"
-                  }`}
-                >
-                  {STEP_LABELS[step]}
-                </span>
-              </div>
-              <div className="h-1 rounded-full bg-slate-200">
-                <div
-                  className="h-1 rounded-full bg-[var(--primary)] transition-all duration-500"
-                  style={{
-                    width: step < currentStep ? "100%" : step === currentStep ? "50%" : "0%",
-                  }}
-                />
-              </div>
+              ))}
             </div>
-          ))}
-        </div>
+            {/* Progress bar */}
+            <div className="h-1 rounded-full bg-slate-200">
+              <div
+                className="h-1 rounded-full bg-[var(--primary)] transition-all duration-500"
+                style={{ width: `${((currentStep - 1) / (TOTAL_STEPS - 1)) * 100}%` }}
+              />
+            </div>
+          </div>
 
-        {/* Form card */}
-        <div className="rounded-2xl bg-white p-8 shadow-lg shadow-slate-200/50 border border-slate-100">
-          <h2 className="mb-6 text-2xl font-bold text-[var(--foreground)]">
+          <h2 className="mb-4 text-xl font-bold text-[var(--foreground)] sm:mb-6 sm:text-2xl">
             {STEP_LABELS[currentStep]}
           </h2>
 
@@ -388,7 +388,10 @@ export default function Home() {
                         : "border-slate-200 hover:border-slate-300 hover:bg-slate-50"
                     }`}
                   >
-                    <span className="text-2xl">{opt.icon}</span>
+                    <opt.icon
+                      size={24}
+                      className={obiettivo === opt.value ? "text-[var(--primary)]" : "text-slate-400"}
+                    />
                     <div>
                       <span className="block text-base font-semibold text-[var(--foreground)]">
                         {opt.label}
