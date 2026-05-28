@@ -43,12 +43,14 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# Claude Code
+# Claude Code (personal-only, decisione separata per commands/)
 .claude/
 .claude.local.md
 
-# Project docs (local only)
-PRD.md
-backlog/
+# Personal/local (NOT project knowledge — keep out)
 CLAUDE.md
 .superskills/
+
+# Test artifacts
+.playwright-mcp/
+design/screenshots/tmp/
